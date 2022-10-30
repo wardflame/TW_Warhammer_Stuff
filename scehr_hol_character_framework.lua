@@ -13,12 +13,12 @@ local listBLL = {
         buildingKey = "wh_main_special_settlement_altdorf_1_emp",
         heroes = {
             {
-                -- HERO 1: RANDOM WITCH HUNTER
+                -- HERO 1: CUSTOM NAME WITCH HUNTER
                 type = "spy",                               -- db\agents\tables
                 subtype = "wh_main_emp_witch_hunter",       -- db\agent_subtypes\tables
                 maleOrFemale = true,                        -- True is male, false is female
                 customName = true,                          -- Set true if you want to set a custom name
-                title = "Lord",                          -- Character's title: any string
+                title = "Lord",                             -- Character's title: any string
                 forename = "Godrick",                       -- Character's first name: any string
                 surname = "Wightsbane",                     -- Character's last name: any string
             },
@@ -76,6 +76,10 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
             ""
             );
         end
+
+        -- Replenish action points so they can be used on-spawn.
+        local heroLookUp = cm:char_lookup_str(heroObj);
+        cm:replenish_action_points(heroLookUp);
 
         out("SCEHR HOL: spawned hero");
         out("   Name: "..heroEntry.title.." "..heroEntry.forename.." "..heroEntry.surname);
@@ -231,11 +235,16 @@ end
 
 cm:add_first_tick_callback(
     function()
+        local isLOLLoaded = core:is_mod_loaded("scehr_lol_ancillary_framework");
         local isIE = cm:get_campaign_name() == "main_warhammer";
 
-        -- Make sure we're in Immortal Empires.
-        if isIE then
+        -- Make sure we're in Immortal Empires and Landmarks of Legend is loaded.
+        if isIE and isLOLLoaded then
             InitLandmarkLordListeners();
+        else
+            out("#### SCEHR HOL: Prerequisites not met. Heroes of Legend script will not load! ####");
+            out("   Immortal Empires: "..tostring(isIE));
+            out("   Landmarks of Legend: "..tostring(isLOLLoaded));
         end
     end
 );
