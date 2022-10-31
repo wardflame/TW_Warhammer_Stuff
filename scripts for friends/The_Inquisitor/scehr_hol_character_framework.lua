@@ -21,22 +21,32 @@ local listBLL = {
                 title = "Lord",                             -- Character's title: any string
                 forename = "Godrick",                       -- Character's first name: any string
                 surname = "Wightsbane",                     -- Character's last name: any string
+                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 0                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
             },
-        },
-        lords = {
             {
-                -- LORD 1: VOLKMAR THE GRIM
-                type = "general",                           -- db\agents
-                subtype = "wh_dlc04_emp_volkmar",           -- db\agent_subtypes
+                -- HERO 2: CUSTOM NAME WITCH HUNTER
+                type = "spy",                               -- db\agents\tables
+                subtype = "wh_main_emp_witch_hunter",       -- db\agent_subtypes\tables
                 maleOrFemale = true,                        -- True is male, false is female
-                title = "names_name_10000",                 -- text\db\names__.loc
-                forename = "names_name_10001",              -- text\db\names__.loc
-                surname = "names_name_10002",               -- text\db\names__.loc
+                customName = true,                          -- Set true if you want to set a custom name
+                title = "Lord",                             -- Character's title: any string
+                forename = "Podrick",                       -- Character's first name: any string
+                surname = "Silverspear",                     -- Character's last name: any string
+                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 0                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
             }
         },
+        lords = {},
         aiEligibile = false
     }
 };
+
+local listHumans = {};
 
 local function GetSettlementSpawnCoords(factionName, regionName)
     local locX, locY = cm:find_valid_spawn_location_for_character_from_settlement(
@@ -47,6 +57,63 @@ local function GetSettlementSpawnCoords(factionName, regionName)
         0
     );
     return locX, locY;
+end
+
+local function AINoHumanCheck(listEntry)
+    local noHumans = false; -- If true, no human players are playing eligible factions.
+    local numSubcultures = #listEntry.subcultureKeys;
+    local numFactions = #listEntry.factionKeys;
+
+    if numSubcultures > 0 then
+        local aiCultures = numSubcultures;
+        for i = 1, #listEntry.subcultureKeys do
+            local subKey = listEntry.subcultureKeys[i];
+            for j = 1, #listHumans do
+                local isHumanEligible = cm:get_faction(listHumans[i]):subculture() == subKey;
+                if isHumanEligible then
+                    aiCultures = aiCultures - 1;
+                end
+            end
+        end
+        if aiCultures >= numSubcultures then
+            noHumans = true;
+        end
+    end
+
+    out("SCEHR HOL: Casus Belli after subcultures: "..tostring(noHumans));
+
+    if numFactions > 0 then
+        local aiFactions = numFactions;
+        for i = 1, #listEntry.factionKeys do
+            local facKey = listEntry.factionKeys[i];
+            for j = 1, #listHumans do
+                if listHumans[i] == facKey then
+                    aiFactions = aiFactions - 1;
+                end
+            end
+        end
+        if aiFactions >= numFactions then
+            noHumans = true;
+        end
+    end
+
+    out("SCEHR HOL: Casus Belli after factions: "..tostring(noHumans));
+
+    if noHumans then
+        listEntry.aiEligibile = true;
+        out("SCEHR HOL: "..listEntry.buildingKey.." has no human players competing. AI is eligible!");
+    end
+end
+
+local function CreateCharacterEventMessage(characterEntry, factionKey)
+    cm:show_message_event(
+        factionKey,
+        characterEntry.messageTitle,
+        characterEntry.messagePrimary,
+        characterEntry.messageSecondary,
+        true,
+        characterEntry.messageIndex
+    );
 end
 
 local function SpawnCharacters(listEntry, factionObj, targetRegion)
@@ -81,6 +148,11 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
         local heroLookUp = cm:char_lookup_str(heroObj);
         cm:replenish_action_points(heroLookUp);
 
+        -- Create event message if one available.
+        if heroEntry.messageTitle ~= nil then
+            CreateCharacterEventMessage(heroEntry, factionKey);
+        end
+
         out("SCEHR HOL: spawned hero");
         out("   Name: "..heroEntry.title.." "..heroEntry.forename.." "..heroEntry.surname);
         out("   Type: "..heroEntry.type);
@@ -103,6 +175,11 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
             true,
             ""
         );
+
+        -- Create event message if one available.
+        if lordEntry.messageTitle ~= nil then
+            CreateCharacterEventMessage(lordEntry, factionKey);
+        end
 
         out("SCEHR HOL: spawned lord");
         out("   Name: "..lordEntry.title.." "..lordEntry.forename.." "..lordEntry.surname);
@@ -155,7 +232,7 @@ local function TerminateBuildingListeners(listEntry)
     end
 end
 
-local function InitLandmarkLordListeners()
+local function InitLandmarkCharacterListeners()
     out("#### SCEHR HOL: Adding character listener(s)! ####");
 
     local listenerTotal = 0;
@@ -168,6 +245,7 @@ local function InitLandmarkLordListeners()
             local totalSubcultures = #listEntry.subcultureKeys;
             local totalFactions = #listEntry.factionKeys;
             local buildingKey = listEntry.buildingKey;
+            AINoHumanCheck(listEntry);
 
             -- Subculture listener init.
             if totalSubcultures > 0 then
@@ -240,7 +318,8 @@ cm:add_first_tick_callback(
 
         -- Make sure we're in Immortal Empires and Landmarks of Legend is loaded.
         if isIE and isLOLLoaded then
-            InitLandmarkLordListeners();
+            listHumans = cm:get_human_factions();
+            InitLandmarkCharacterListeners();
         else
             out("#### SCEHR HOL: Prerequisites not met. Heroes of Legend script will not load! ####");
             out("   Immortal Empires: "..tostring(isIE));
