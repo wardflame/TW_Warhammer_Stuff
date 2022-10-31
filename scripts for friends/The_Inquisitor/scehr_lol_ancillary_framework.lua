@@ -259,6 +259,20 @@ local listBA = {
     }
 };
 
+local function CheckForHumans(currentEntry)
+    local factions = currentEntry.factionKeys;
+    local totalHumans = 0;
+    for i = 1, #factions do
+        if cm:get_faction(factions[i]):is_human() then
+            totalHumans = totalHumans + 1;
+        end
+    end
+    if totalHumans <= 0 then
+        out("SCEHR LOL: "..currentEntry.buildingKey.." has no human players competing. AI is eligible!")
+        return true;
+    end
+    return currentEntry.aiEligible;
+end
 
 local function ba_status()
     out("#### SCEHR LOL: Adding building/ancillary listener(s)! ####");
@@ -267,6 +281,7 @@ local function ba_status()
     for i = 1, #listBA do
         local currentBA = listBA[i];
         local currentBAClaimed = cm:get_saved_value("lol_"..currentBA.ancillaryKey.."_claimed");
+        currentBA.aiEligible = CheckForHumans(currentBA);
 
         if not currentBAClaimed then
 
@@ -275,7 +290,7 @@ local function ba_status()
                 local targetIsHuman = cm:is_faction_human(currentBA.factionKeys[j]);
 
                 if not currentBA.aiEligible and not targetIsHuman then
-                    out("#### SCEHR LOL: "..currentBA.factionKeys[j].." is ineligible for the "..currentBA.ancillaryKey..". Denying.");
+                    out("#### SCEHR LOL: "..currentBA.factionKeys[j].." is ineligible for "..currentBA.ancillaryKey..". Denying.");
                 else
                     cm:add_faction_turn_start_listener_by_name(
                     "lol_"..currentBA.factionKeys[j].."_"..currentBA.buildingKey.."_listener",

@@ -80,8 +80,6 @@ local function AINoHumanCheck(listEntry)
         end
     end
 
-    out("SCEHR HOL: Casus Belli after subcultures: "..tostring(noHumans));
-
     if numFactions > 0 then
         local aiFactions = numFactions;
         for i = 1, #listEntry.factionKeys do
@@ -97,12 +95,11 @@ local function AINoHumanCheck(listEntry)
         end
     end
 
-    out("SCEHR HOL: Casus Belli after factions: "..tostring(noHumans));
-
     if noHumans then
-        listEntry.aiEligibile = true;
         out("SCEHR HOL: "..listEntry.buildingKey.." has no human players competing. AI is eligible!");
+        return true;
     end
+    return listEntry.aiEligibile;
 end
 
 local function CreateCharacterEventMessage(characterEntry, factionKey)
@@ -245,7 +242,7 @@ local function InitLandmarkCharacterListeners()
             local totalSubcultures = #listEntry.subcultureKeys;
             local totalFactions = #listEntry.factionKeys;
             local buildingKey = listEntry.buildingKey;
-            AINoHumanCheck(listEntry);
+            listEntry.aiEligibile = AINoHumanCheck(listEntry);
 
             -- Subculture listener init.
             if totalSubcultures > 0 then
@@ -264,7 +261,7 @@ local function InitLandmarkCharacterListeners()
                                 out("#### SCEHR HOL: "..factionKey.." is ineligible for the characters. Denying.");
                             else
                                 local hasBuilding, region = FactionBuildingQuery(listEntry, context:faction());
-                                if hasBuilding then
+                                if hasBuilding and cm:turn_number() == 2 then
                                     SpawnCharacters(listEntry, context:faction(), region);
                                     cm:set_saved_value(claimString, true);
                                     TerminateBuildingListeners(listEntry);
