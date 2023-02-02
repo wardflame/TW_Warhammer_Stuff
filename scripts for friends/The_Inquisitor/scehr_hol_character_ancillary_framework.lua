@@ -18,26 +18,26 @@ local function InitCharacterAncillaryListeners()
         local campaignName = cm:get_campaign_name();
 
         if character.campaignKey == campaignName then
-            
+
             local charHasAnc = cm:get_saved_value("hol_ca_"..character.characterKey.."_claimed_"..character.ancillaryKey);
             if not charHasAnc then
                 core:add_listener(
                     "hol_ca_"..character.characterKey.."_"..character.ancillaryKey.."_listener",
                     "CharacterTurnStart",
                     function(context)
-                                local charObj = context:character();
-                                return charObj:character_subtype_key() == character.characterKey;
+                        local charObj = context:character();
+                        return charObj:character_subtype_key() == character.characterKey;
                     end,
                     function(context)
-                            local charObj = context:character();
-                            local charRank = charObj:rank();
-                            local charFactionObj = charObj:faction();
-                            if charRank >= character.giftRank then
-                                cm:add_ancillary_to_faction(charFactionObj, character.ancillaryKey, false);
-                                cm:set_saved_value("hol_ca_"..character.characterKey.."_claimed_"..character.ancillaryKey, true);
-                                core:remove_listener("hol_ca_"..character.characterKey.."_"..character.ancillaryKey.."_listener");
-                                out("SCEHR HOL: "..charObj:character_subtype_key().." claims "..character.ancillaryKey.." at rank "..character.gift_rank.."!");
-                            end
+                        local charObj = context:character();
+                        local charRank = charObj:rank();
+                        local charFactionObj = charObj:faction();
+                        if charRank >= character.giftRank then
+                            cm:add_ancillary_to_faction(charFactionObj, character.ancillaryKey, false);
+                            cm:set_saved_value("hol_ca_"..character.characterKey.."_claimed_"..character.ancillaryKey, true);
+                            core:remove_listener("hol_ca_"..character.characterKey.."_"..character.ancillaryKey.."_listener");
+                            out("SCEHR HOL: "..charObj:character_subtype_key().." claims "..character.ancillaryKey.." at rank "..character.gift_rank.."!");
+                        end
                     end,
                     true
                 );
