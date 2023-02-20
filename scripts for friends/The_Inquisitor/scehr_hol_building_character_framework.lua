@@ -3,10 +3,42 @@
 -- NOTE: Each entry should have a unique building key.
 -- If not using factionKeys or subcultureKeys, leave the table blank.
 -- If not wanting to add, say, otherName's to the character, leave the STRING blank: "".
+
+--[[
+    //// ELEMENT BREAKDOWN
+    campaignKey = campaign name. (Immortal Empires = main_warhammer. Realms of Chaos = wh3_main_chaos.)
+    factionsKeys = factions_tables keys.
+    subcultureKeys = cultures_subcultures_tables keys.
+    buildingKey = building_levels_tables key.
+    ## HEROES
+        type = agents_tables key.
+        subtype = agents_subtypes_tables key.
+        maleOrFemale = true is male character, false is female character.
+        customName = true if wanting to manually input a name, false if wanting the game to randomly generate.
+        title = custom character title.
+        forename = custom character first name.
+        surname = custom character last name.
+        messageTitle = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+        messagePrimary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+        messageSecondary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+        messageIndex = irrelevant. Keep at 0.
+    ## LORD
+        type = agents_tables key.
+        subtype = agent_subtypes_tables key.
+        maleOrFemale = true is male character, false is female character.
+        title = text\db\names__.loc     | character title.
+        forename = text\db\names__.loc  | character first name.
+        surname = text\db\names__.loc   | character last name.
+        messageTitle = text\db\event_feed_strings__.loc     | Set to nil if not using an incident
+        messagePrimary = text\db\event_feed_strings__.loc   | Set to nil if not using an incident
+        messageSecondary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+        messageIndex = 0
+    aiEligible = true if ai can claim characters, false if only players. If no players are playing an eligible faction, the ai will be able to claim regardless.
+]]
 local listBLL = {
     {
         -- ELEMENT 1
-        campaignKey = "campaign_key",
+        campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh_main_sc_emp_empire",
@@ -19,24 +51,24 @@ local listBLL = {
         heroes = {
             {
                 -- HERO 1: HERMIT KNIGHT OF MALMONT
-                type = "champion",                               -- db\agents\tables
-                subtype = "hermit_knight_1",       -- db\agent_subtypes\tables
-                maleOrFemale = true,                        -- True is male, false is female
-                customName = true,                          -- Set true if you want to set a custom name
-                title = "",                             -- Character's title: any string
-                forename = "Hermit Knight",                       -- Character's first name: any string
-                surname = "of Malmont",                     -- Character's last name: any string
-                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageIndex = 0                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+                type = "champion",
+                subtype = "hermit_knight_1",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Hermit Knight",
+                surname = "of Malmont",
+                messageTitle = "event_feed_strings_text_hol_event_hermit_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_hermit_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_hermit_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 0  
             }
         },
         lords = {},
     },
     {
         -- ELEMENT 2
-        campaignKey = "campaign_key",
+        campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh3_main_sc_cth_cathay"
@@ -45,17 +77,17 @@ local listBLL = {
         heroes = {
             {
                 -- HERO 1: BANNAGA
-                type = "wizard",                               -- db\agents\tables
-                subtype = "bannaga",       -- db\agent_subtypes\tables
-                maleOrFemale = true,                        -- True is male, false is female
-                customName = true,                          -- Set true if you want to set a custom name
-                title = "",                             -- Character's title: any string
-                forename = "Bannaga",                       -- Character's first name: any string
-                surname = "",                     -- Character's last name: any string
-                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageIndex = 0                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+                type = "wizard",
+                subtype = "bannaga",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Bannaga",
+                surname = "",
+                messageTitle = "event_feed_strings_text_hol_event_bannaga_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_bannaga_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_bannaga_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 3                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
             }
         },
         lords = {},
@@ -63,7 +95,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 3
-        campaignKey = "campaign_key",
+        campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh3_main_sc_kho_khorne",
@@ -73,17 +105,17 @@ local listBLL = {
         heroes = {
             {
                 -- HERO 1: SIMAERGUL
-                type = "champion",                               -- db\agents\tables
-                subtype = "simaergul_0",       -- db\agent_subtypes\tables
-                maleOrFemale = true,                        -- True is male, false is female
-                customName = true,                          -- Set true if you want to set a custom name
-                title = "",                             -- Character's title: any string
-                forename = "Simaergul",                       -- Character's first name: any string
-                surname = "",                     -- Character's last name: any string
-                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageIndex = 0                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+                type = "champion",
+                subtype = "simaergul_0",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Simaergul",
+                surname = "",
+                messageTitle = "event_feed_strings_text_hol_event_simaergul_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 4                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
             }
         },
         lords = {},
@@ -91,7 +123,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 4
-        campaignKey = "campaign_key",
+        campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh_main_sc_emp_empire",
@@ -105,23 +137,23 @@ local listBLL = {
         lords = {
             {
                 -- LORD 1: PRINCE LORENZO LUPO
-                type = "general",                           -- db\agents
-                subtype = "lorenzo_lupo",           -- db\agent_subtypes
-                maleOrFemale = true,                        -- True is male, false is female
-                title = "names_name_44442",                 -- text\db\names__.loc
-                forename = "names_name_44443",              -- text\db\names__.loc
-                surname = "names_name_44444",              -- text\db\names__.loc
-                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageIndex = 0
+                type = "general",
+                subtype = "lorenzo_lupo",
+                maleOrFemale = true,
+                title = "names_name_44442",
+                forename = "names_name_44443",
+                surname = "names_name_44444",
+                messageTitle = "event_feed_strings_text_hol_event_lorenzo_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_lorenzo_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_lorenzo_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 2
             }
         },
         aiEligibile = false
     },
     {
         -- ELEMENT 5
-        campaignKey = "campaign_key",
+        campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh_dlc05_sc_wef_wood_elves"
@@ -131,23 +163,23 @@ local listBLL = {
         lords = {
             {
                 -- LORD 1: AMADRI IRONBARK
-                type = "general",                           -- db\agents
-                subtype = "amadri_ironbark",           -- db\agent_subtypes
-                maleOrFemale = true,                        -- True is male, false is female
-                title = "",                 -- text\db\names__.loc
-                forename = "names_name_55551",              -- text\db\names__.loc
-                surname = "names_name_55552",              -- text\db\names__.loc
-                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageIndex = 0
+                type = "general",
+                subtype = "amadri_ironbark",
+                maleOrFemale = true,
+                title = "",
+                forename = "names_name_55551",
+                surname = "names_name_55552",
+                messageTitle = "event_feed_strings_text_hol_event_amadri_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_amadri_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_amadri_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 1
             }
         },
         aiEligibile = false
     },
     {
         -- ELEMENT 6
-        campaignKey = "campaign_key",
+        campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh_dlc05_sc_wef_wood_elves"
@@ -157,23 +189,23 @@ local listBLL = {
         lords = {
             {
                 -- LORD 1: SCEOLAN
-                type = "general",                           -- db\agents
-                subtype = "sceolan",           -- db\agent_subtypes
-                maleOrFemale = true,                        -- True is male, false is female
-                title = "",                 -- text\db\names__.loc
-                forename = "names_name_55558",              -- text\db\names__.loc
-                surname = "names_name_55559",              -- text\db\names__.loc
-                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageIndex = 0                
+                type = "general",
+                subtype = "sceolan",
+                maleOrFemale = true,
+                title = "",
+                forename = "names_name_55558",
+                surname = "names_name_55559",
+                messageTitle = "event_feed_strings_text_hol_event_sceolan_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_sceolan_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_sceolan_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 6              
             }
         },
         aiEligibile = false
     },
     {
         -- ELEMENT 7
-        campaignKey = "campaign_key",
+        campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh3_main_sc_nur_nurgle",
@@ -184,20 +216,183 @@ local listBLL = {
         lords = {
             {
                 -- LORD 1: VILE PRINCE
-                type = "general",                           -- db\agents
-                subtype = "vile_prince",           -- db\agent_subtypes
-                maleOrFemale = true,                        -- True is male, false is female
-                title = "",                 -- text\db\names__.loc
-                forename = "names_name_55554",              -- text\db\names__.loc
-                surname = "",              -- text\db\names__.loc
-                messageTitle = "event_feed_strings_text_hol_event_emp_godpod_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messagePrimary = "event_feed_strings_text_hol_event_emp_godpod_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageSecondary = "event_feed_strings_text_hol_event_emp_godpod_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
-                messageIndex = 0
+                type = "general",
+                subtype = "vile_prince",
+                maleOrFemale = true,
+                title = "",
+                forename = "names_name_55554",
+                surname = "",
+                messageTitle = "event_feed_strings_text_hol_event_vile_prince_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 5
             }
         },
         aiEligibile = false
-    }
+    },
+    {
+        -- ELEMENT 8
+        campaignKey = "wh3_main_chaos",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh3_main_sc_cth_cathay"
+        },
+        buildingKey = "shang_yang_barracks",
+        heroes = {
+            {
+                -- HERO 1: BANNAGA
+                type = "wizard",
+                subtype = "bannaga",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Bannaga",
+                surname = "",
+                messageTitle = "event_feed_strings_text_hol_event_bannaga_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_bannaga_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_bannaga_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 3                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+            }
+        },
+        lords = {},
+        aiEligibile = false
+    },
+    {
+        -- ELEMENT 9
+        campaignKey = "wh3_main_chaos",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh3_main_sc_kho_khorne",
+            "wh_main_sc_chs_chaos"
+        },
+        buildingKey = "brazen_altar",
+        heroes = {
+            {
+                -- HERO 1: SIMAERGUL
+                type = "champion",
+                subtype = "simaergul_0",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Simaergul",
+                surname = "",
+                messageTitle = "event_feed_strings_text_hol_event_simaergul_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 4                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+            }
+        },
+        lords = {},
+        aiEligibile = false
+    },
+    {
+        -- ELEMENT 10
+        campaignKey = "wh3_main_chaos",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh3_main_sc_nur_nurgle",
+            "wh_main_sc_chs_chaos"
+        },
+        buildingKey = "children_of_doom",
+        heroes = {},
+        lords = {
+            {
+                -- LORD 1: VILE PRINCE
+                type = "general",
+                subtype = "vile_prince",
+                maleOrFemale = true,
+                title = "",
+                forename = "names_name_55554",
+                surname = "",
+                messageTitle = "event_feed_strings_text_hol_event_vile_prince_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 5
+            }
+        },
+        aiEligibile = false
+    },
+    {
+        -- ELEMENT 11
+        campaignKey = "main_warhammer",
+        factionKeys = {
+            "wh_main_vmp_vampire_counts"                       
+        },
+        subcultureKeys = {},
+        buildingKey = "helmut_camp",
+        heroes = {
+            {
+                -- HERO 1: SIMAERGUL
+                type = "champion",
+                subtype = "helmut_von_carstein_0",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Helmut",
+                surname = "von Carstein",
+                messageTitle = "event_feed_strings_text_hol_event_simaergul_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 4                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+            }
+        },
+        lords = {},
+        aiEligibile = false
+    },
+    {
+        -- ELEMENT 12
+        campaignKey = "main_warhammer",
+        factionKeys = {
+            "wh_main_vmp_vampire_counts"                       
+        },
+        subcultureKeys = {},
+        buildingKey = "gorgivich_camp",
+        heroes = {
+            {
+                -- HERO 1: SIMAERGUL
+                type = "champion",
+                subtype = "gorgivich_krakvald_0",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Gorgivich",
+                surname = "Krakvald",
+                messageTitle = "event_feed_strings_text_hol_event_simaergul_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 4                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+            }
+        },
+        lords = {},
+        aiEligibile = false
+    },
+    {
+        -- ELEMENT 13
+        campaignKey = "main_warhammer",
+        factionKeys = {
+            "wh_main_vmp_vampire_counts"                       
+        },
+        subcultureKeys = {},
+        buildingKey = "gunther_camp",
+        heroes = {
+            {
+                -- HERO 1: SIMAERGUL
+                type = "champion",
+                subtype = "gunther_von_grecht_0",
+                maleOrFemale = true,
+                customName = true,
+                title = "",
+                forename = "Gunther",
+                surname = "von Grecht",
+                messageTitle = "event_feed_strings_text_hol_event_simaergul_recruit_title",                       -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messagePrimary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",            -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageSecondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",        -- text\db\event_feed_strings__.loc | Set to nil if not using an incident
+                messageIndex = 4                                                                           -- db\campaign_group_member_criteria_values_tables | Set to nil if not using an incident
+            }
+        },
+        lords = {},
+        aiEligibile = false
+    }    
 };
 local listHumans = {};
 
@@ -213,7 +408,7 @@ local function GetSettlementSpawnCoords(factionName, regionName)
 end
 
 local function AINoHumanCheck(listEntry)
-    local noHumans = false; -- If true, no human players are playing eligible factions.
+    local noHumans = false;
     local numSubcultures = #listEntry.subcultureKeys;
     local numFactions = #listEntry.factionKeys;
 
@@ -249,7 +444,6 @@ local function AINoHumanCheck(listEntry)
     end
 
     if noHumans then
-        out("SCEHR HOL: "..listEntry.buildingKey.." has no human players competing. AI is eligible!");
         return true;
     end
     return listEntry.aiEligibile;
@@ -304,11 +498,6 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
             if heroEntry.messageTitle ~= nil then
                 CreateCharacterEventMessage(heroEntry, factionKey);
             end
-
-            out("SCEHR HOL: spawned hero");
-            out("   Name: "..heroEntry.title.." "..heroEntry.forename.." "..heroEntry.surname);
-            out("   Type: "..heroEntry.type);
-            out("   Subtype: "..heroEntry.subtype);
         end
     end
 
@@ -334,11 +523,6 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
             if lordEntry.messageTitle ~= nil then
                 CreateCharacterEventMessage(lordEntry, factionKey);
             end
-
-            out("SCEHR HOL: spawned lord");
-            out("   Name: "..lordEntry.title.." "..lordEntry.forename.." "..lordEntry.surname);
-            out("   Type: "..lordEntry.type);
-            out("   Subtype: "..lordEntry.subtype);
         end
     end
 end
@@ -372,7 +556,7 @@ local function TerminateBuildingListeners(listEntry)
     if totalSubcultures > 0 then
         for i = 1, totalSubcultures do
             local subcultureKey = listEntry.subcultureKeys[i];
-            local listenerName = "hol_"..subcultureKey.."_"..buildingKey.."_characters_subculture_listener"
+            local listenerName = "hol_bc_"..subcultureKey.."_"..buildingKey.."_characters_subculture_listener"
             cm:remove_faction_turn_start_listener_by_subculture(listenerName);
             out("#### SCEHR HOL: Terminated "..listenerName.."! ####");
         end
@@ -380,7 +564,7 @@ local function TerminateBuildingListeners(listEntry)
     if totalFactions > 0 then
         for i = 1, totalFactions do
             local factionKey = listEntry.factionKeys[i];
-            local listenerName = "hol_"..factionKey.."_"..buildingKey.."_characters_faction_listener"
+            local listenerName = "hol_bc_"..factionKey.."_"..buildingKey.."_characters_faction_listener"
             cm:remove_faction_turn_start_listener_by_name(listenerName);
             out("#### SCEHR HOL: Terminated "..listenerName.."! ####");
         end
@@ -388,14 +572,14 @@ local function TerminateBuildingListeners(listEntry)
 end
 
 local function InitLandmarkCharacterListeners()
-    out("#### SCEHR HOL: Adding character listener(s)! ####");
+    out("#### SCEHR HOL: Adding building/character listener(s)! ####");
     local listenersAdded = 0;
     for i = 1, #listBLL do
         local listEntry = listBLL[i];
 
         if listEntry.campaignKey == cm:get_campaign_name() then
 
-            local claimString = "hol_"..listEntry.buildingKey.."_characters_claimed";
+            local claimString = "hol_bc_"..listEntry.buildingKey.."_characters_claimed";
             local charactersClaimed = cm:get_saved_value(claimString);
 
             if not charactersClaimed then
@@ -409,7 +593,7 @@ local function InitLandmarkCharacterListeners()
                     for j = 1, totalSubcultures do
                         local subcultureKey = listEntry.subcultureKeys[j];
                         cm:add_faction_turn_start_listener_by_subculture(
-                            "hol_"..subcultureKey.."_"..buildingKey.."_characters_subculture_listener",
+                            "hol_bc_"..subcultureKey.."_"..buildingKey.."_characters_subculture_listener",
                             subcultureKey,
                             function(context)
                                 local factionObj = context:faction();
@@ -445,7 +629,7 @@ local function InitLandmarkCharacterListeners()
 
                         if not factionIsNull and validClaim then
                             cm:add_faction_turn_start_listener_by_name(
-                                "hol_"..factionKey.."_"..buildingKey.."_characters_faction_listener",
+                                "hol_bc_"..factionKey.."_"..buildingKey.."_characters_faction_listener",
                                 factionKey,
                                 function(context)
                                     local hasBuilding, region = FactionBuildingQuery(listEntry, context:faction());
