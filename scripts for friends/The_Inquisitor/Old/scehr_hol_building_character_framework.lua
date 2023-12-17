@@ -636,7 +636,7 @@ local function InitLandmarkCharacterListeners()
                                     if hasBuilding then
                                         SpawnCharacters(listEntry, context:faction(), region);
                                         cm:set_saved_value(claimString, true);
-                                       TerminateBuildingListeners(listEntry);
+                                        TerminateBuildingListeners(listEntry);
                                    end
                                 end,
                                 true
