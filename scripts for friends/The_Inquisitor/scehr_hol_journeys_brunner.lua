@@ -1,19 +1,20 @@
--- HEROES OF LEGEND: BRUNNER DILEMMAS | scehr | 14/12/2023
+-- HEROES OF LEGEND: JOURNEYS | BRUNNER | scehr | 14/12/2023
 
-local scehrHOLLib = require("scehr_hol_lib");
+local scehrLib = require("scehr_hol_lib");
+local scehrHOLCore = require("scehr_hol_core");
 
 local brunnerSubtypeKey = "bounty_hunter_brunner";
-local saved_brunnerFactionKey = scehrHOLLib.dilemmasKeyPrefix.."brunner_faction_key";
+local saved_brunnerFactionKey = scehrHOLCore.journeysKeyPrefix.."brunner_faction_key";
 
 local secretIdentitySkillKey = "secret_identity";
 local secretIdentityDilemmaKey = "brunner_secret_identity";
-local saved_brunnerRevealedKey = scehrHOLLib.dilemmasKeyPrefix.."brunner_identity_revealed";
+local saved_brunnerRevealedKey = scehrHOLCore.journeysKeyPrefix.."brunner_identity_revealed";
 
 local revealedTraitKey = "brunner_identity_revealed";
 local hiddenTraitKey = "brunner_identity_concealed";
 
-local saved_huntChanceKey = scehrHOLLib.dilemmasKeyPrefix.."brunner_hunt_chance";
-local saved_augustineDefeatedKey = scehrHOLLib.dilemmasKeyPrefix.."brunner_defeated_augustine";
+local saved_huntChanceKey = scehrHOLCore.journeysKeyPrefix.."brunner_hunt_chance";
+local saved_augustineDefeatedKey = scehrHOLCore.journeysKeyPrefix.."brunner_defeated_augustine";
 
 local augustineData = {
     factionKey = "mixer_brt_viscountcy_de_chegney",
@@ -42,7 +43,7 @@ local augustineData = {
 
 local function ListenToAugustineBattleEnded()
     core:add_listener(
-        scehrHOLLib.dilemmasKeyPrefix.."ListenToAugustineBattleEnded",
+        scehrHOLCore.journeysKeyPrefix.."ListenToAugustineBattleEnded",
         "BattleCompleted",
         function()
             return cm:pending_battle_cache_faction_is_involved(cm:get_saved_value(saved_brunnerFactionKey));
@@ -51,7 +52,9 @@ local function ListenToAugustineBattleEnded()
             local pendingBattle = cm:model():pending_battle();
             local augustineWon = pendingBattle:attacker_won();
 
-            out("#### SCEHR HOL: DILEMMAS | Augustine fought Brunner! Augustine Won = "..tostring(augustineWon));
+            out("#### SCEHR HOL: JOURNEYS | Augustine fought Brunner! Augustine Won = "..tostring(augustineWon));
+            out("#### SCEHR HOL: JOURNEYS | Augustine fought Brunner! Has Been Fought = "..tostring(pendingBattle:has_been_fought()));
+            out("#### SCEHR HOL: JOURNEYS | Augustine fought Brunner! Is Auto Resolved = "..tostring(pendingBattle:is_auto_resolved()));
         end,
         false
     );
@@ -122,17 +125,17 @@ end
 
 local function ListenToHuntForBrunner()
     core:add_listener(
-        "SCEHR_HOL_ListenToHuntForBrunner",
+        scehrHOLCore.journeysKeyPrefix.."ListenToHuntForBrunner",
         "FactionTurnStart",
         function(context)
             return context:faction():name() == cm:get_saved_value(saved_brunnerFactionKey);
         end,
         function(context)
             local diceRoll = math.random(0, 100);
-            out("#### SCEHR HOL: DILEMMAS | Augustine Hunt Brunner Chance = "..tostring(cm:get_saved_value(saved_huntChanceKey).." ####"))
+            out("#### SCEHR HOL: JOURNEYS | Augustine Hunt Brunner Chance = "..tostring(cm:get_saved_value(saved_huntChanceKey).." ####"))
 
             if diceRoll <= cm:get_saved_value(saved_huntChanceKey) then
-                local brunnerObj = scehrHOLLib.FindCharacterInFactionBySubtype(cm:get_saved_value(saved_brunnerFactionKey), brunnerSubtypeKey);
+                local brunnerObj = scehrLib.FindCharacterInFactionBySubtype(cm:get_saved_value(saved_brunnerFactionKey), brunnerSubtypeKey);
 
                 if not brunnerObj:is_embedded_in_military_force() then
                     -- if brunner isn't in an army, trigger none-army dilemma and listen to event.
@@ -147,7 +150,7 @@ local function ListenToHuntForBrunner()
                     cm:set_saved_value(saved_huntChanceKey, huntChance);
 
                     if huntChance % 25 == 0 then
-                        scehrHOLLib.CreateMessageEvent(cm:get_saved_value(saved_brunnerFactionKey), augustineData.huntMessage);
+                        scehrLib.CreateMessageEvent(cm:get_saved_value(saved_brunnerFactionKey), augustineData.huntMessage);
                     end
                 end
             end
@@ -158,7 +161,7 @@ end
 
 local function ListenToSecretIdentityDilemma(brunnerLookup, brunnerObj)
     core:add_listener(
-        "SCEHR_HOL_ListenToSecretIdentityDilemma",
+        scehrHOLCore.journeysKeyPrefix.."ListenToSecretIdentityDilemma",
         "DilemmaChoiceMadeEvent",
         function(context)
             return context:dilemma() == secretIdentityDilemmaKey;
@@ -187,7 +190,7 @@ end
 
 local function ListenForBrunnerSecretIdentity()
     core:add_listener(
-        "SCEHR_HOL_ListenForBrunnerSecretIdentity",
+        scehrHOLCore.journeysKeyPrefix.."ListenForBrunnerSecretIdentity",
         "CharacterSkillPointAllocated",
         function(context)
             return context:character():character_subtype(brunnerSubtypeKey) and context:skill_point_spent_on() == secretIdentitySkillKey;
@@ -204,7 +207,7 @@ end
 
 local function ListenForBrunnerSpawn()
     core:add_listener(
-        "SCEHR_HOL_ListenForBrunnerSpawn",
+        scehrHOLCore.journeysKeyPrefix.."ListenForBrunnerSpawn",
         "CharacterCreated",
         function(context)
             return context:character():character_subtype(brunnerSubtypeKey);
@@ -217,7 +220,7 @@ local function ListenForBrunnerSpawn()
 
             cm:set_saved_value(saved_brunnerFactionKey, brunnerContextFactionKey);
 
-            out("#### SCEHR HOL: DILEMMAS | Brunner spawned, faction: "..tostring(cm:get_saved_value(saved_brunnerFactionKey)));
+            out("#### SCEHR HOL: JOURNEYS | Brunner spawned, faction: "..tostring(cm:get_saved_value(saved_brunnerFactionKey)));
 
             ListenForBrunnerSecretIdentity();
         end,
@@ -225,7 +228,7 @@ local function ListenForBrunnerSpawn()
     );
 end
 
--- Guard clause from the last stage to the first stage of dilemmas for the character.
+-- Guard clause from the last stage to the first stage of journeys for the character.
 local function InitDilemmasBrunner()
     local augustineDefeated = cm:get_saved_value(saved_augustineDefeatedKey);
 
@@ -249,7 +252,7 @@ local function InitDilemmasBrunner()
         return;
     end
 
-    local brunnerObj = scehrHOLLib.FindCharacterInWorldBySubtype(brunnerSubtypeKey);
+    local brunnerObj = scehrLib.FindCharacterInWorldBySubtype(brunnerSubtypeKey);
 
     if not brunnerObj then
         ListenForBrunnerSpawn();
@@ -259,13 +262,13 @@ end
 
 cm:add_first_tick_callback(
     function()
-        local isHOLLoaded = core:is_mod_loaded("scehr_hol_characters_buildings");
+        local isHOLLoaded = core:is_mod_loaded("scehr_hol_core");
 
         -- Make sure Heroes of Legend is loaded.
         if isHOLLoaded then
             InitDilemmasBrunner();
         else
-            out("#### SCEHR HOL: DILEMMAS | Prerequisites not met. Script will not load! ####");
+            out("#### SCEHR HOL: JOURNEYS | Prerequisites not met. Script will not load! ####");
             out("    > Heroes of Legend installed: "..tostring(isHOLLoaded));
         end
     end

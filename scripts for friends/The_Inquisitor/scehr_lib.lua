@@ -1,10 +1,8 @@
 -- SCEHR LIBRARY: HEROES OF LEGEND | scehr | 14/12/2023
 
-local scehr_hol_lib = {};
+local scehr_lib = {};
 
-scehr_hol_lib.dilemmasKeyPrefix = "scehr_hol_dilemmas_";
-
-function scehr_hol_lib.FindCharacterInWorldBySubtype(characterSubtypeKey)
+function scehr_lib.FindCharacterInWorldBySubtype(characterSubtypeKey)
     local factionList = cm:model():world():faction_list();
 
     for i = 0, factionList:num_items() - 1 do
@@ -20,11 +18,11 @@ function scehr_hol_lib.FindCharacterInWorldBySubtype(characterSubtypeKey)
         end
     end
 
-    out(">>>> SCEHR LIB: HOL | Could not find character by subtype! <<<<");
+    out(">>>> SCEHR LIB | Could not find character in world by subtype!");
     return nil;
 end
 
-function scehr_hol_lib.FindCharacterInFactionBySubtype(factionKey, characterSubtypeKey)
+function scehr_lib.FindCharacterInFactionBySubtype(factionKey, characterSubtypeKey)
     local factionObj = cm:get_faction(factionKey);
     local factionCharacterList = factionObj:character_list();
 
@@ -36,22 +34,22 @@ function scehr_hol_lib.FindCharacterInFactionBySubtype(factionKey, characterSubt
         end
     end
 
-    out(">>>> SCEHR LIB: HOL | Could not find character by subtype! <<<<");
+    out(">>>> SCEHR LIB | Could not find character in faction by subtype!");
     return nil;
 end
 
-function scehr_hol_lib.CreateMessageEvent(factionKey, message)
+function scehr_lib.CreateMessageEvent(factionKey, message)
     cm:show_message_event(
         factionKey,
-        message.messageTitle,
-        message.messagePrimary,
-        message.messageSecondary,
+        message.title,
+        message.primary,
+        message.secondary,
         true,
-        message.messageIndex
+        message.index
     );
 end
 
-function scehr_hol_lib.GetSettlementSpawnCoords(factionKey, regionKey)
+function scehr_lib.GetSettlementSpawnCoords(factionKey, regionKey)
     local locX, locY = cm:find_valid_spawn_location_for_character_from_settlement(
         factionKey,
         regionKey,
@@ -62,4 +60,4 @@ function scehr_hol_lib.GetSettlementSpawnCoords(factionKey, regionKey)
     return locX, locY;
 end
 
-return scehr_hol_lib;
+return scehr_lib;
