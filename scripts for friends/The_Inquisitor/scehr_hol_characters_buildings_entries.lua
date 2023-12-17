@@ -18,10 +18,10 @@
         title = custom character title.
         forename = custom character first name.
         surname = custom character last name.
-        messageTitle = text\db\event_feed_strings__.loc | Set to nil if not using an incident
-        messagePrimary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
-        messageSecondary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
-        messageIndex = irrelevant. Keep at 0.
+        title = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+        primary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+        secondary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+        index = irrelevant. Keep at 0.
     ## LORD
         type = agents_tables key.
         subtype = agent_subtypes_tables key.
@@ -29,10 +29,13 @@
         title = text\db\names__.loc     | character title.
         forename = text\db\names__.loc  | character first name.
         surname = text\db\names__.loc   | character last name.
-        messageTitle = text\db\event_feed_strings__.loc     | Set to nil if not using an incident
-        messagePrimary = text\db\event_feed_strings__.loc   | Set to nil if not using an incident
-        messageSecondary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
-        messageIndex = 0
+        message = {
+            title = text\db\event_feed_strings__.loc     | Set to nil if not using an incident
+            primary = text\db\event_feed_strings__.loc   | Set to nil if not using an incident
+            secondary = text\db\event_feed_strings__.loc | Set to nil if not using an incident
+            index = 0
+        }
+        
     aiEligible = true if ai can claim characters, false if only players. If no players are playing an eligible faction, the ai will be able to claim regardless.
 ]]
 
@@ -60,10 +63,10 @@ local listBLL = {
                 forename = "Hermit Knight",
                 surname = "of Malmont",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_hermit_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_hermit_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_hermit_recruit_secondary_detail",
-                    messageIndex = 2000
+                    title = "event_feed_strings_text_hol_event_hermit_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_hermit_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_hermit_recruit_secondary_detail",
+                    index = 2000
                 }
             }
         },
@@ -93,10 +96,10 @@ local listBLL = {
                 forename = "Bannaga",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_bannaga_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_bannaga_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_bannaga_recruit_secondary_detail",
-                    messageIndex = 2003
+                    title = "event_feed_strings_text_hol_event_bannaga_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_bannaga_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_bannaga_recruit_secondary_detail",
+                    index = 2003
                 }
             }
         },
@@ -123,10 +126,10 @@ local listBLL = {
                 forename = "Simaergul",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_simaergul_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",
-                    messageIndex = 2004
+                    title = "event_feed_strings_text_hol_event_simaergul_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",
+                    index = 2004
                 }
             }
         },
@@ -156,10 +159,10 @@ local listBLL = {
                 forename = "names_name_44443",
                 surname = "names_name_44444",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_lorenzo_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_lorenzo_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_lorenzo_recruit_secondary_detail",
-                    messageIndex = 2002
+                    title = "event_feed_strings_text_hol_event_lorenzo_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_lorenzo_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_lorenzo_recruit_secondary_detail",
+                    index = 2002
                 }
             }
         },
@@ -184,10 +187,10 @@ local listBLL = {
                 forename = "names_name_55551",
                 surname = "names_name_55552",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_amadri_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_amadri_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_amadri_recruit_secondary_detail",
-                    messageIndex = 2001
+                    title = "event_feed_strings_text_hol_event_amadri_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_amadri_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_amadri_recruit_secondary_detail",
+                    index = 2001
                 }
             }
         },
@@ -212,10 +215,10 @@ local listBLL = {
                 forename = "names_name_55558",
                 surname = "names_name_55559",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_sceolan_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_sceolan_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_sceolan_recruit_secondary_detail",
-                    messageIndex = 2006
+                    title = "event_feed_strings_text_hol_event_sceolan_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_sceolan_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_sceolan_recruit_secondary_detail",
+                    index = 2006
                 }
             }
         },
@@ -240,10 +243,10 @@ local listBLL = {
                 forename = "names_name_55554",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_vile_prince_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",
-                    messageIndex = 2005
+                    title = "event_feed_strings_text_hol_event_vile_prince_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",
+                    index = 2005
                 }
             }
         },
@@ -268,10 +271,10 @@ local listBLL = {
                 forename = "Bannaga",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_bannaga_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_bannaga_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_bannaga_recruit_secondary_detail",
-                    messageIndex = 2003
+                    title = "event_feed_strings_text_hol_event_bannaga_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_bannaga_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_bannaga_recruit_secondary_detail",
+                    index = 2003
                 }
             }
         },
@@ -298,10 +301,10 @@ local listBLL = {
                 forename = "Simaergul",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_simaergul_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",
-                    messageIndex = 2004
+                    title = "event_feed_strings_text_hol_event_simaergul_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_simaergul_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_simaergul_recruit_secondary_detail",
+                    index = 2004
                 }
             }
         },
@@ -327,10 +330,10 @@ local listBLL = {
                 forename = "names_name_55554",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_vile_prince_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",
-                    messageIndex = 2005
+                    title = "event_feed_strings_text_hol_event_vile_prince_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",
+                    index = 2005
                 }
             }
         },
@@ -355,10 +358,10 @@ local listBLL = {
                 forename = "Helmut",
                 surname = "von Carstein",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_helmut_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_helmut_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_helmut_recruit_secondary_detail",
-                    messageIndex = 2007
+                    title = "event_feed_strings_text_hol_event_helmut_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_helmut_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_helmut_recruit_secondary_detail",
+                    index = 2007
                 }
             }
         },
@@ -384,10 +387,10 @@ local listBLL = {
                 forename = "Gorgivich",
                 surname = "Krakvald",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_krakvald_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_krakvald_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_krakvald_recruit_secondary_detail",
-                    messageIndex = 2008
+                    title = "event_feed_strings_text_hol_event_krakvald_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_krakvald_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_krakvald_recruit_secondary_detail",
+                    index = 2008
                 }
             }
         },
@@ -413,10 +416,10 @@ local listBLL = {
                 forename = "Gunther",
                 surname = "von Grecht",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_gunther_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_gunther_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_gunther_recruit_secondary_detail",
-                    messageIndex = 2009
+                    title = "event_feed_strings_text_hol_event_gunther_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_gunther_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_gunther_recruit_secondary_detail",
+                    index = 2009
                 }
             }
         },
@@ -442,10 +445,10 @@ local listBLL = {
                 forename = "names_name_55567",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_wilhelm_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_wilhelm_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_wilhelm_recruit_secondary_detail",
-                    messageIndex = 2010
+                    title = "event_feed_strings_text_hol_event_wilhelm_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_wilhelm_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_wilhelm_recruit_secondary_detail",
+                    index = 2010
                 }
             }
         },
@@ -470,10 +473,10 @@ local listBLL = {
                 forename = "Viscount",
                 surname = "d'Alembençon",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_viscount_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_viscount_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_viscount_recruit_secondary_detail",
-                    messageIndex = 2011
+                    title = "event_feed_strings_text_hol_event_viscount_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_viscount_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_viscount_recruit_secondary_detail",
+                    index = 2011
                 }
             }
         },
@@ -499,10 +502,10 @@ local listBLL = {
                 forename = "Agravain",
                 surname = "de Beau Quest",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_agravain_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_agravain_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_agravain_recruit_secondary_detail",
-                    messageIndex = 2012
+                    title = "event_feed_strings_text_hol_event_agravain_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_agravain_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_agravain_recruit_secondary_detail",
+                    index = 2012
                 }
             }
         },
@@ -528,10 +531,10 @@ local listBLL = {
                 forename = "Viscount",
                 surname = "d'Alembençon",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_viscount_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_viscount_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_viscount_recruit_secondary_detail",
-                    messageIndex = 2011
+                    title = "event_feed_strings_text_hol_event_viscount_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_viscount_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_viscount_recruit_secondary_detail",
+                    index = 2011
                 }
             }
         },
@@ -568,10 +571,10 @@ local listBLL = {
                 forename = "Brunner",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_brunner_recruit_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_brunner_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_brunner_recruit_secondary_detail",
-                    messageIndex = 2013
+                    title = "event_feed_strings_text_hol_event_brunner_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_brunner_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_brunner_recruit_secondary_detail",
+                    index = 2013
                 }
             }
         },
@@ -602,10 +605,10 @@ local listBLL = {
                 forename = "Shi-Hong",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_shi_hong_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_shi_hong_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_shi_hong_recruit_secondary_detail",
-                    messageIndex = 2014
+                    title = "event_feed_strings_text_hol_event_shi_hong_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_shi_hong_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_shi_hong_recruit_secondary_detail",
+                    index = 2014
                 }
             }
         },
@@ -636,10 +639,10 @@ local listBLL = {
                 forename = "Shi-Hong",
                 surname = "",
                 message = {
-                    messageTitle = "event_feed_strings_text_hol_event_shi_hong_recruit_title",
-                    messagePrimary = "event_feed_strings_text_hol_event_shi_hong_recruit_primary_detail",
-                    messageSecondary = "event_feed_strings_text_hol_event_shi_hong_recruit_secondary_detail",
-                    messageIndex = 2014
+                    title = "event_feed_strings_text_hol_event_shi_hong_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_shi_hong_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_shi_hong_recruit_secondary_detail",
+                    index = 2014
                 }
             }
         },

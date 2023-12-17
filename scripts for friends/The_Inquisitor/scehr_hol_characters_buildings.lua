@@ -1,6 +1,6 @@
 -- HEROES OF LEGEND: CHARACTERS-TO-BUILDINGS | scehr | 14/12/2023
 
-local scehrHOLLib = require("scehr_hol_lib");
+local scehrLib = require("scehr_lib");
 local cbEntries = require("scehr_hol_characters_buildings_entries");
 
 local listHumans = {};
@@ -58,7 +58,7 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
         for i = 1, #listEntry.heroes do
 
             local heroEntry = listEntry.heroes[i];
-            locX, locY = scehrHOLLib.GetSettlementSpawnCoords(factionKey, regionKey);
+            locX, locY = scehrLib.GetSettlementSpawnCoords(factionKey, regionKey);
             local heroObj = cm:create_agent(
                 factionKey,
                 heroEntry.type,
@@ -84,7 +84,7 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
 
             -- Create event message if one available.
             if heroEntry.message then
-                scehrHOLLib.CreateMessageEvent(factionKey, heroEntry.message);
+                scehrLib.CreateMessageEvent(factionKey, heroEntry.message);
             end
         end
     end
@@ -109,7 +109,7 @@ local function SpawnCharacters(listEntry, factionObj, targetRegion)
 
             -- Create event message if one available.
             if lordEntry.message then
-                scehrHOLLib.CreateMessageEvent(factionKey, lordEntry.message);
+                scehrLib.CreateMessageEvent(factionKey, lordEntry.message);
             end
         end
     end
