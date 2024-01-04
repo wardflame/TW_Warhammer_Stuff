@@ -6,6 +6,7 @@
 
 --[[
     //// ELEMENT BREAKDOWN
+    claimKey = id for spawn. Use for multiple elements if you want them affected by it.
     campaignKey = campaign name. (Immortal Empires = main_warhammer. Realms of Chaos = wh3_main_chaos.)
     factionsKeys = factions_tables keys.
     subcultureKeys = cultures_subcultures_tables keys.
@@ -15,7 +16,7 @@
         subtype = agents_subtypes_tables key.
         maleOrFemale = true is male character, false is female character.
         customName = true if wanting to manually input a name, false if wanting the game to randomly generate.
-        title = custom character title.
+        clanName = custom character title.
         forename = custom character first name.
         surname = custom character last name.
         title = text\db\event_feed_strings__.loc | Set to nil if not using an incident
@@ -42,6 +43,7 @@
 local listBLL = {
     {
         -- ELEMENT 1
+        claimKey = "mainMalmont",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -58,8 +60,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "hermit_knight_1",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Hermit Knight",
                 surname = "of Malmont",
                 message = {
@@ -71,28 +72,24 @@ local listBLL = {
             }
         },
         lords = {},
+        aiEligibile = false
     },
     {
         -- ELEMENT 2
+        claimKey = "mainBannaga",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
             "wh3_main_sc_cth_cathay"
         },
-        dilemmaFactionKeys = {}, -- pear
-        dilemmaSubcultureKeys = {}, -- pear
         buildingKey = "shang_yang_barracks",
-        regionKey = "", -- pear
-        dilemmaKey = "", -- pear
-        spawnOnCharacterSubtype = "", -- pear
         heroes = {
             {
                 -- HERO 1: BANNAGA
                 type = "wizard",
                 subtype = "bannaga",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Bannaga",
                 surname = "",
                 message = {
@@ -108,6 +105,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 3
+        claimKey = "mainSimaergul",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -121,8 +119,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "simaergul_0",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Simaergul",
                 surname = "",
                 message = {
@@ -138,6 +135,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 4
+        claimKey = "mainLorenzo",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -155,7 +153,7 @@ local listBLL = {
                 type = "general",
                 subtype = "lorenzo_lupo",
                 maleOrFemale = true,
-                title = "names_name_44442",
+                clanName = "names_name_44442",
                 forename = "names_name_44443",
                 surname = "names_name_44444",
                 message = {
@@ -170,6 +168,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 5
+        claimKey = "mainAmadri",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -183,7 +182,7 @@ local listBLL = {
                 type = "general",
                 subtype = "amadri_ironbark",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_55551",
                 surname = "names_name_55552",
                 message = {
@@ -198,6 +197,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 6
+        claimKey = "mainSceolan",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -211,7 +211,7 @@ local listBLL = {
                 type = "general",
                 subtype = "sceolan",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_55558",
                 surname = "names_name_55559",
                 message = {
@@ -226,6 +226,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 7
+        claimKey = "mainVilePrince",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -239,7 +240,7 @@ local listBLL = {
                 type = "general",
                 subtype = "vile_prince",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_55554",
                 surname = "",
                 message = {
@@ -254,6 +255,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 8
+        claimKey = "chaosBannaga",
         campaignKey = "wh3_main_chaos",
         factionKeys = {},
         subcultureKeys = {
@@ -266,8 +268,7 @@ local listBLL = {
                 type = "wizard",
                 subtype = "bannaga",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Bannaga",
                 surname = "",
                 message = {
@@ -283,6 +284,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 9
+        claimKey = "chaosSimaergul",
         campaignKey = "wh3_main_chaos",
         factionKeys = {},
         subcultureKeys = {
@@ -296,8 +298,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "simaergul_0",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Simaergul",
                 surname = "",
                 message = {
@@ -313,6 +314,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 10
+        claimKey = "chaosVilePrince",
         campaignKey = "wh3_main_chaos",
         factionKeys = {},
         subcultureKeys = {
@@ -326,7 +328,7 @@ local listBLL = {
                 type = "general",
                 subtype = "vile_prince",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_55554",
                 surname = "",
                 message = {
@@ -341,6 +343,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 11
+        claimKey = "mainHelmutVonCarstein",
         campaignKey = "main_warhammer",
         factionKeys = {
             "wh_main_vmp_vampire_counts"                       
@@ -353,8 +356,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "helmut_von_carstein_0",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Helmut",
                 surname = "von Carstein",
                 message = {
@@ -370,6 +372,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 12
+        claimKey = "mainGorgivichKrakvald",
         campaignKey = "main_warhammer",
         factionKeys = {
             "wh_main_vmp_vampire_counts"                       
@@ -382,8 +385,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "gorgivich_krakvald_0",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Gorgivich",
                 surname = "Krakvald",
                 message = {
@@ -399,6 +401,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 13
+        claimKey = "mainGuntherVonGrecht",
         campaignKey = "main_warhammer",
         factionKeys = {
             "wh_main_vmp_vampire_counts"                       
@@ -411,8 +414,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "gunther_von_grecht_0",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Gunther",
                 surname = "von Grecht",
                 message = {
@@ -428,6 +430,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 14
+        claimKey = "mainEmperorWilhelmI",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -441,7 +444,7 @@ local listBLL = {
                 type = "general",
                 subtype = "emperor_wilhelm_1",
                 maleOrFemale = true,
-                title = "names_name_55566",
+                clanName = "names_name_55566",
                 forename = "names_name_55567",
                 surname = "",
                 message = {
@@ -456,10 +459,11 @@ local listBLL = {
     },
     {
         -- ELEMENT 16
+        claimKey = "mainViscountDAlembencon",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
-            "wh_main_sc_brt_bretonnia"  
+            "wh_main_sc_brt_bretonnia"
         },
         buildingKey = "tancred_castle",
         heroes = {
@@ -468,8 +472,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "the_viscount",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Viscount",
                 surname = "d'Alembençon",
                 message = {
@@ -485,6 +488,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 17
+        claimKey = "mainAgravainDeBeauQuest",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -497,8 +501,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "agravain_de_beau_quest",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Agravain",
                 surname = "de Beau Quest",
                 message = {
@@ -514,6 +517,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 20
+        claimKey = "chaosViscountDAlembencon",
         campaignKey = "wh3_main_chaos",
         factionKeys = {},
         subcultureKeys = {
@@ -526,8 +530,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "the_viscount",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Viscount",
                 surname = "d'Alembençon",
                 message = {
@@ -543,6 +546,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 23
+        claimKey = "mainBrunner",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -556,7 +560,7 @@ local listBLL = {
         },
         dilemmaFactionKeys = {},
         dilemmaSubcultureKeys = {},
-        buildingKey = "wh_main_dwf_industry_1",
+        buildingKey = "wh_main_brt_farm_1", -- hundred_sins_street
         regionKey = "",
         dilemmaKey = "",
         spawnOnCharacterSubtype = "",
@@ -566,8 +570,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "bounty_hunter_brunner",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Brunner",
                 surname = "",
                 message = {
@@ -583,6 +586,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 24
+        claimKey = "mainShiHong",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -600,8 +604,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "shi_hong",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Shi-Hong",
                 surname = "",
                 message = {
@@ -617,6 +620,7 @@ local listBLL = {
     },
     {
         -- ELEMENT 25
+        claimKey = "chaosShiHong",
         campaignKey = "wh3_main_chaos",
         factionKeys = {},
         subcultureKeys = {
@@ -634,8 +638,7 @@ local listBLL = {
                 type = "champion",
                 subtype = "shi_hong",
                 maleOrFemale = true,
-                customName = true,
-                title = "",
+                clanName = "",
                 forename = "Shi-Hong",
                 surname = "",
                 message = {

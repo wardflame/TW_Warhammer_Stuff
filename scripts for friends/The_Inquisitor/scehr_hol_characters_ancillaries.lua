@@ -19,9 +19,7 @@ local function InitCharacterAncillaryListeners()
                     "hol_ca_"..character.characterKey.."_"..character.ancillaryKey.."_listener",
                     "CharacterRankUp",
                     function(context)
-                        local charObj = context:character();
-                        local isTarget = charObj:character_subtype(character.characterKey);
-                        return isTarget;
+                        return context:character():character_subtype(character.characterKey);
                     end,
                     function(context)
                         local charObj = context:character();

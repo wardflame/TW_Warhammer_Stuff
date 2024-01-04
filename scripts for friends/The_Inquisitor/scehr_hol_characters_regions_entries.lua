@@ -6,6 +6,7 @@
 
 --[[
     //// ELEMENT BREAKDOWN
+    claimKey = id for spawn. Use for multiple elements if you want them affected by it.
     campaignKey = campaign name. (Immortal Empires = main_warhammer. Realms of Chaos = wh3_main_chaos.)
     factionsKeys = factions_tables keys.
     subcultureKeys = cultures_subcultures_tables keys.
@@ -15,7 +16,7 @@
         subtype = agents_subtypes_tables key.
         maleOrFemale = true is male character, false is female character.
         customName = true if wanting to manually input a name, false if wanting the game to randomly generate.
-        title = custom character title.
+        clanName = custom character title.
         forename = custom character first name.
         surname = custom character last name.
         messageTitle = text\db\event_feed_strings__.loc | Set to nil if not using an incident
@@ -26,7 +27,7 @@
         type = agents_tables key.
         subtype = agent_subtypes_tables key.
         maleOrFemale = true is male character, false is female character.
-        title = text\db\names__.loc     | character title.
+        clanName = text\db\names__.loc     | character clanName.
         forename = text\db\names__.loc  | character first name.
         surname = text\db\names__.loc   | character last name.
         messageTitle = text\db\event_feed_strings__.loc     | Set to nil if not using an incident
@@ -39,6 +40,7 @@
 local listCR = {
     {
         -- ELEMENT 1
+        claimKey = "mainVilePrince",
         campaignKey = "main_warhammer",
         factionKeys = {
             "wh_main_chs_chaos",
@@ -61,7 +63,7 @@ local listCR = {
                 type = "general",
                 subtype = "vile_prince",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_444449",
                 surname = "",
                 message = {
@@ -76,6 +78,7 @@ local listCR = {
     },
     {
         -- ELEMENT 2
+        claimKey = "chaosVilePrince",
         campaignKey = "wh3_main_chaos",
         factionKeys = {
             "wh_main_chs_chaos",
@@ -98,7 +101,7 @@ local listCR = {
                 type = "general",
                 subtype = "vile_prince",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_444449",
                 surname = "",
                 message = {
@@ -113,6 +116,7 @@ local listCR = {
     },
     {
         -- ELEMENT 3
+        claimKey = "mainVilePrince",
         campaignKey = "main_warhammer",
         factionKeys = {},
         subcultureKeys = {
@@ -126,7 +130,7 @@ local listCR = {
                 type = "general",
                 subtype = "vile_prince",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_444449",
                 surname = "",
                 message = {
@@ -141,6 +145,7 @@ local listCR = {
     },
     {
         -- ELEMENT 4
+        claimKey = "chaosVilePrince",
         campaignKey = "wh3_main_chaos",
         factionKeys = {},
         subcultureKeys = {
@@ -154,7 +159,7 @@ local listCR = {
                 type = "general",
                 subtype = "vile_prince",
                 maleOrFemale = true,
-                title = "",
+                clanName = "",
                 forename = "names_name_444449",
                 surname = "",
                 message = {
@@ -168,3 +173,5 @@ local listCR = {
         aiEligibile = false
     }
 }
+
+return listCR;
