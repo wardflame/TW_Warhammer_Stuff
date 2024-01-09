@@ -2,6 +2,80 @@
 
 local scehr_lib = {};
 
+scehr_lib.alignmentKeys = {
+    order = "Order",
+    death = "Death",
+    destruction = "Destruction",
+    chaos = "Chaos"
+}
+
+scehr_lib.alignmentSubcultures = {
+    [scehr_lib.alignmentKeys.order] =
+    {
+        "wh_main_sc_brt_bretonnia",
+        "wh_main_sc_dwf_dwarfs",
+        "wh_main_sc_emp_empire",
+        "wh_main_sc_teb_teb",
+        "wh_dlc05_sc_wef_wood_elves",
+        "wh2_main_sc_hef_high_elves",
+        "wh2_main_sc_lzd_lizardmen",
+        "wh3_main_sc_cth_cathay",
+        "wh3_main_sc_ksl_kislev"
+    },
+    [scehr_lib.alignmentKeys.death] =
+    {
+        "wh_main_sc_vmp_vampire_counts",
+        "wh2_dlc09_sc_tmb_tomb_kings",
+        "wh2_dlc11_sc_cst_vampire_coast"
+    },
+    [scehr_lib.alignmentKeys.destruction] =
+    {
+        "wh_main_sc_grn_greenskins",
+        "wh_main_sc_grn_savage_orcs",
+        "wh2_main_sc_def_dark_elves",
+        "wh2_main_rogue",
+        "wh3_main_sc_ogr_ogre_kingdoms"
+    },
+    [scehr_lib.alignmentKeys.chaos] =
+    {
+        "wh_main_sc_chs_chaos",
+        "wh_dlc03_sc_bst_beastmen",
+        "wh_dlc08_sc_nor_norsca",
+        "wh2_main_rogue_chaos",
+        "wh2_main_sc_skv_skaven",
+        "wh3_main_sc_dae_daemons",
+        "wh3_main_sc_kho_khorne",
+        "wh3_main_sc_nur_nurgle",
+        "wh3_main_sc_sla_slaanesh",
+        "wh3_main_sc_tze_tzeentch",
+        "wh3_dlc23_sc_chd_chaos_dwarfs"
+    }
+}
+
+function scehr_lib.GetSubcultureAlignment(subcultureKey)
+    for k, v in pairs(scehr_lib.alignmentSubcultures) do
+        local subcultures = v;
+        local subculture;
+        for i = 1, #subcultures do
+            subculture = subcultures[i];
+            if subcultureKey == subculture then return k; end
+        end
+    end
+
+    return nil;
+end
+
+function scehr_lib.DoesSubcultureMatchAlignment(subcultureKey, alignmentKey)
+    local alignmentSubcultures = scehr_lib.alignmentSubculturesp[alignmentKey];
+    local subculture;
+
+    for i = 1, #alignmentSubcultures do
+        subculture = alignmentSubcultures[i];
+        if subcultureKey == subculture then return true; end
+    end
+    return false;
+end
+
 -- Checks through faction region list and finds a match to provided region key. Returns true if match is found.
 function scehr_lib.FactionHasRegion(factionKey, regionKey)
     local iFaction = cm:get_faction(factionKey);
@@ -73,8 +147,9 @@ function scehr_lib.WoundCharacter(iCharacter, shouldKillForce, isLL)
     if not isLL then cm:set_character_immortality(cm:char_lookup_str(iCharacter), false); end
 end
 
--- Get a object with characters (separated into tables: lords, heroes) and spawn them to a faction.
+-- Get a object with characters (separated into tables: lords, heroes) and spawn them to a faction. Returns a table of interfaces, broken into heroes (iCharacter) and lords (iCharDetails).
 function scehr_lib.SpawnCharactersToFaction(factionKey, characterTable, targetRegionKey)
+    local newCharacters = { heroes = {}, lords = {} }
     local charactersSpawned = 0;
     if #characterTable.heroes > 0 then
         -- Create heroes.
@@ -109,6 +184,8 @@ function scehr_lib.SpawnCharactersToFaction(factionKey, characterTable, targetRe
                 scehr_lib.CreateMessageEvent(factionKey, heroEntry.message);
             end
 
+            table.insert(newCharacters.heroes, heroICharacter);
+
             charactersSpawned = scehr_lib.IncrementNumber(charactersSpawned);
         end
     end
@@ -117,7 +194,7 @@ function scehr_lib.SpawnCharactersToFaction(factionKey, characterTable, targetRe
         -- Create lords.
         for _, value in ipairs(characterTable.lords) do
             local lordEntry = value;
-            cm:spawn_character_to_pool(
+            local lordICharDetails = cm:spawn_character_to_pool(
                 factionKey,
                 lordEntry.forename,
                 lordEntry.surname,
@@ -136,15 +213,19 @@ function scehr_lib.SpawnCharactersToFaction(factionKey, characterTable, targetRe
                 scehr_lib.CreateMessageEvent(factionKey, lordEntry.message);
             end
 
+            table.insert(newCharacters.lords, lordICharDetails);
+
             charactersSpawned = scehr_lib.IncrementNumber(charactersSpawned);
         end
     end
 
     out(">>>> SCEHR LIB | Spawned "..tostring(charactersSpawned).." characters to "..factionKey.."!");
+
+    return newCharacters;
 end
 
 -- Spawns lord into character pool of a faction. Returns the spawned lord's ICharacterDetails.
-function scehr_lib.SpawnLordToFaction(factionKey, lordEntry, maleOrFemale, immortal)
+function scehr_lib.SpawnLordToFaction(factionKey, lordEntry, immortal)
     if cm:get_faction(factionKey) == nil or cm:get_faction(factionKey):is_null_interface() then
         out(">>>> SCEHR LIB | Failed to spawn character from faction key!")
         return false;
@@ -159,7 +240,7 @@ function scehr_lib.SpawnLordToFaction(factionKey, lordEntry, maleOrFemale, immor
         lordEntry.clanName,
         "",
         20,
-        maleOrFemale,
+        lordEntry.maleOrFemale,
         lordEntry.agentType,
         lordEntry.agentSubtype,
         immortal,
@@ -171,7 +252,7 @@ function scehr_lib.SpawnLordToFaction(factionKey, lordEntry, maleOrFemale, immor
 end
 
 -- Gets random faction from subcultures and spawns a lord into the character pool of that faction. Returns the spawned lord's ICharacterDetails.
-function scehr_lib.SpawnLordToRandomFactionBySubcultures(subcultureList, lordEntry, maleOrFemale, immortal)
+function scehr_lib.SpawnLordToRandomFactionBySubcultures(subcultureList, lordEntry, immortal)
     local factionList = {};
 
     for i = 1, #subcultureList do
@@ -197,7 +278,7 @@ function scehr_lib.SpawnLordToRandomFactionBySubcultures(subcultureList, lordEnt
         lordEntry.clanName,
         "",
         20,
-        maleOrFemale,
+        lordEntry.maleOrFemale,
         lordEntry.agentType,
         lordEntry.agentSubtype,
         immortal,
@@ -282,30 +363,6 @@ function scehr_lib.GetSettlementSpawnCoords(factionKey, regionKey)
     return locX, locY;
 end
 
--- Generate random numbers {iterations} times from 1-100, choose one. Returns random number + mod.
-function scehr_lib.D100RollWithFlatModifier(iterations, mod)
-    local roll = scehr_lib.GenerateRandomNumbers(1, 100, iterations, false);
-    local rollModified = roll + mod;
-    return rollModified;
-end
-
--- Generate random numbers within min/max range for {iterations} amount of times, added to a table. Returns table, or one random number from the table.
-function scehr_lib.GenerateRandomNumbers(min, max, iterations, returnAll)
-    local rolls = {};
-    local randomNumber;
-
-    for _ = 1, iterations do
-        randomNumber = math.random(min, max)
-        table.insert(rolls, randomNumber);
-    end
-
-    if returnAll then
-        return rolls;
-    else
-        return rolls[math.random(1, #rolls)];
-    end
-end
-
 -- Get float and truncate to desired decimal places. Returns truncated float.
 function scehr_lib.TruncateNumber(number, decimals)
     number = number * (10 ^ decimals);
@@ -322,6 +379,33 @@ end
 -- Reduces input value by 1. Returns reduced value.
 function scehr_lib.DecrementNumber(value)
     return value - 1;
+end
+
+
+-- >>>>>> REDUNDANT: IMPLEMENTED BETTER BY CA <<<<<< --
+
+-- USE cm:random_number(100, 1) INSTEAD | Generate random numbers {iterations} times from 1-100, choose one. Returns random number + mod.
+function scehr_lib.D100RollWithFlatModifier(iterations, mod)
+    local roll = scehr_lib.GenerateRandomNumbers(1, 100, iterations, false);
+    local rollModified = roll + mod;
+    return rollModified;
+end
+
+-- USE cm:random_number(max, min) INSTEAD | Generate random numbers within min/max range for {iterations} amount of times, added to a table. Returns table, or one random number from the table.
+function scehr_lib.GenerateRandomNumbers(min, max, iterations, returnAll)
+    local rolls = {};
+    local randomNumber;
+
+    for _ = 1, iterations do
+        randomNumber = math.random(min, max)
+        table.insert(rolls, randomNumber);
+    end
+
+    if returnAll then
+        return rolls;
+    else
+        return rolls[math.random(1, #rolls)];
+    end
 end
 
 return scehr_lib;

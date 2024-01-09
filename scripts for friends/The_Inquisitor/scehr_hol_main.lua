@@ -55,7 +55,7 @@ function scehr_hol_main.AINoHumanCheck(listEntry)
         return true;
     end
 
-    return listEntry.aiEligibile;
+    return false;
 end
 
 function scehr_hol_main.TerminateListeners(claimKey)

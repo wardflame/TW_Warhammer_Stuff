@@ -13,68 +13,70 @@ local function InitLandmarkSpawnListeners()
         local svClaimKey = scehrHOLMain.charactersKeyPrefix..cbEntry.claimKey.."_claimed";
         local svStatus = cm:get_saved_value(svClaimKey);
 
-        if not svStatus then
-            local aiCanClaim = scehrHOLMain.AINoHumanCheck(cbEntry);
+        if cbEntry.campaignKey == cm:get_campaign_name() then
+            if not svStatus then
+                local aiCanClaim = scehrHOLMain.AINoHumanCheck(cbEntry);
 
-            -- Do subcultures.
-            if #cbEntry.subcultureKeys > 0 then
+                -- Do subcultures.
+                if #cbEntry.subcultureKeys > 0 then
 
-                for j = 1, #cbEntry.subcultureKeys do
-                    local scKey = cbEntry.subcultureKeys[j];
-                    local listenerName = scehrHOLMain.charactersKeyPrefix..scKey.."_"..cbEntry.claimKey;
+                    for j = 1, #cbEntry.subcultureKeys do
+                        local scKey = cbEntry.subcultureKeys[j];
+                        local listenerName = scehrHOLMain.charactersKeyPrefix..scKey.."_"..cbEntry.claimKey;
 
-                    cm:add_faction_turn_start_listener_by_subculture(
-                        listenerName,
-                        scKey,
-                        function(context)
-                            local iFaction = context:faction();
-                            local factionIsNull = iFaction:is_null_interface();
-                            local aiEligible = not iFaction:is_human() and aiCanClaim;
+                        cm:add_faction_turn_start_listener_by_subculture(
+                            listenerName,
+                            scKey,
+                            function(context)
+                                local iFaction = context:faction();
+                                local factionIsNull = iFaction:is_null_interface();
+                                local aiEligible = not iFaction:is_human() and aiCanClaim;
 
-                            if not factionIsNull and iFaction:is_human() or aiEligible then
-                                local hasBuilding, iBuilding, iRegion = scehrLib.FactionHasBuilding(iFaction:name(), cbEntry.buildingKey);
-                                if hasBuilding then
-                                    scehrLib.SpawnCharactersToFaction(iFaction:name(), cbEntry, iRegion:name());
-                                    cm:set_saved_value(svClaimKey, true);
-                                    scehrHOLMain.TerminateListeners(cbEntry.claimKey);
+                                if not factionIsNull and iFaction:is_human() or aiEligible then
+                                    local hasBuilding, iBuilding, iRegion = scehrLib.FactionHasBuilding(iFaction:name(), cbEntry.buildingKey);
+                                    if hasBuilding then
+                                        scehrLib.SpawnCharactersToFaction(iFaction:name(), cbEntry, iRegion:name());
+                                        cm:set_saved_value(svClaimKey, true);
+                                        scehrHOLMain.TerminateListeners(cbEntry.claimKey);
+                                    end
                                 end
-                            end
-                        end,
-                        true
-                    );
+                            end,
+                            true
+                        );
 
-                    listenersAdded = scehrLib.IncrementNumber(listenersAdded);
+                        listenersAdded = scehrLib.IncrementNumber(listenersAdded);
+                    end
                 end
-            end
 
-            -- Do factions.
-            if #cbEntry.factionKeys > 0 then
+                -- Do factions.
+                if #cbEntry.factionKeys > 0 then
 
-                for j = 1, #cbEntry.factionKeys do
-                    local fKey = cbEntry.factionKeys[j];
-                    local listenerName = scehrHOLMain.charactersKeyPrefix..fKey.."_"..cbEntry.claimKey;
+                    for j = 1, #cbEntry.factionKeys do
+                        local fKey = cbEntry.factionKeys[j];
+                        local listenerName = scehrHOLMain.charactersKeyPrefix..fKey.."_"..cbEntry.claimKey;
 
-                    cm:add_faction_turn_start_listener_by_name(
-                        listenerName,
-                        fKey,
-                        function(context)
-                            local iFaction = context:faction();
-                            local factionIsNull = iFaction:is_null_interface();
-                            local aiEligible = not iFaction:is_human() and aiCanClaim;
+                        cm:add_faction_turn_start_listener_by_name(
+                            listenerName,
+                            fKey,
+                            function(context)
+                                local iFaction = context:faction();
+                                local factionIsNull = iFaction:is_null_interface();
+                                local aiEligible = not iFaction:is_human() and aiCanClaim;
 
-                            if not factionIsNull and iFaction:is_human() or aiEligible then
-                                local hasBuilding, iBuilding, iRegion = scehrLib.FactionHasBuilding(iFaction:name(), cbEntry.buildingKey);
-                                if hasBuilding then
-                                    scehrLib.SpawnCharactersToFaction(iFaction:name(), cbEntry, iRegion:name());
-                                    cm:set_saved_value(svClaimKey, true);
-                                    scehrHOLMain.TerminateListeners(cbEntry.claimKey);
+                                if not factionIsNull and iFaction:is_human() or aiEligible then
+                                    local hasBuilding, iBuilding, iRegion = scehrLib.FactionHasBuilding(iFaction:name(), cbEntry.buildingKey);
+                                    if hasBuilding then
+                                        scehrLib.SpawnCharactersToFaction(iFaction:name(), cbEntry, iRegion:name());
+                                        cm:set_saved_value(svClaimKey, true);
+                                        scehrHOLMain.TerminateListeners(cbEntry.claimKey);
+                                    end
                                 end
-                            end
-                        end,
-                        true
-                    );
+                            end,
+                            true
+                        );
 
-                    listenersAdded = scehrLib.IncrementNumber(listenersAdded);
+                        listenersAdded = scehrLib.IncrementNumber(listenersAdded);
+                    end
                 end
             end
         end

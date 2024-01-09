@@ -3,15 +3,6 @@
 local scehrLib = require("scehr_lib");
 local scehrHOLMain = require("scehr_hol_main");
 
-local listenerKeys = {
-    azgalTaken = scehrHOLMain.journeysKeyPrefix.."ListenToKarakAzgalTaken",
-    azgalTakenDilemma = scehrHOLMain.journeysKeyPrefix.."ListenToKarakAzgalTakenDilemma"
-};
-
-local dilemmaKeys = {
-    fateOfGrimgorson = "fate_of_grimgorson"
-};
-
 local messages = {
     fateOfGrimgorson0 = {
         title = "event_feed_strings_text_hol_balkrag_aid_event_title",
@@ -25,6 +16,15 @@ local messages = {
         secondary = "event_feed_strings_text_hol_balkrag_slay_event_secondary_detail",
         index = 2013
     }
+};
+
+local listenerKeys = {
+    azgalTaken = scehrHOLMain.journeysKeyPrefix.."ListenToKarakAzgalTaken",
+    azgalTakenDilemma = scehrHOLMain.journeysKeyPrefix.."ListenToKarakAzgalTakenDilemma"
+};
+
+local dilemmaKeys = {
+    fateOfGrimgorson = "fate_of_grimgorson"
 };
 
 local constants = {
@@ -47,6 +47,7 @@ local constants = {
 
 local saveData = {
     svKey = "sv_hol_BalkragJourney",
+    aiEligible = false,
     azgalDilemmaFinished = false,
     balkragProfile = {
         isDead = false,
@@ -58,40 +59,13 @@ local saveData = {
     }
 };
 
-local balkragICharDetails;
-
-local function UpdateCharacterDetails(iCharacter, factionKey)
-    if balkragICharDetails ~= nil then return; end
-
-    if iCharacter then
-        balkragICharDetails = iCharacter:character_details();
-    else
-        out("#### SCEHR: Balkrag ICharacter is nil, searching... ####")
-        local balkrag;
-
-        if factionKey ~= "" then
-            balkrag = scehrLib.FindCharacterInFactionBySubtype(saveData.balkragProfile.factionKey, constants.balkragData.character.agentSubtype);
-        else
-            balkrag = scehrLib.FindCharacterInWorldBySubtype();
-        end
-
-        if balkrag then balkragICharDetails = balkrag:character_details();
-        else out("#### SCEHR: Balkrag was not found. ####");
-        end
-    end
-end
-
-local function LoadBalkrag()
+local function Load()
     saveData = cm:get_saved_value(saveData.svKey);
-
-    if saveData.balkragProfile.journeys.hasSpawned then
-        UpdateCharacterDetails(nil, saveData.balkragProfile.factionKey);
-    end
 end
 
-local function SaveBalkrag()
+local function Save()
     cm:set_saved_value(saveData.svKey, saveData);
-    LoadBalkrag();
+    Load();
 end
 
 local function ListenToAzgalTakenDilemma(faction, region)
@@ -134,7 +108,7 @@ local function ListenToAzgalTakenDilemma(faction, region)
 
             saveData.azgalDilemmaFinished = true;
 
-            SaveBalkrag();
+            Save();
         end,
         false
     );
@@ -149,17 +123,29 @@ local function ListenToKarakAzgalTaken()
             return context:region():name() == constants.azgalRegionKey;
         end,
         function(context)
+            if context:region():is_abandoned() then return; end
+
             local owningFaction = context:region():owning_faction();
+            if owningFaction:subculture() ~= constants.dwarfSubcultureKey then return; end
+            if owningFaction:is_human() == false and saveData.aiEligible == false then return; end
 
-            if owningFaction:is_null_interface() then return; end
-
-            local factionSubculture = owningFaction:subculture();
-            if owningFaction:is_human() and factionSubculture == constants.dwarfSubcultureKey then
+            if saveData.aiEligible then
+                scehrLib.SpawnCharactersToFaction(
+                    owningFaction:name(),
+                    {
+                        heroes = { constants.balkragData.character },
+                        lords = {}
+                    },
+                    constants.azgalRegionKey
+                );
+            else
                 cm:trigger_dilemma(owningFaction:name(), dilemmaKeys.fateOfGrimgorson);
                 ListenToAzgalTakenDilemma(owningFaction, context:region());
             end
+
+            core:remove_listener(listenerKeys.azgalTaken);
         end,
-        false
+        true
     );
 end
 
@@ -171,7 +157,7 @@ end
 
 cm:add_saving_game_callback(
     function()
-        SaveBalkrag();
+        Save();
     end
 );
 
@@ -181,14 +167,16 @@ cm:add_first_tick_callback(
         local numPlayerDwarfs = cm:get_human_factions_of_subculture(constants.dwarfSubcultureKey);
 
         -- Make sure Heroes of Legend is loaded.
-        if isHOLLoaded and #numPlayerDwarfs > 0 then
+        if isHOLLoaded then
 
             if cm:get_saved_value(saveData.svKey) == nil then
-                out("#### SCEHR HOL: JOURNEYS (Balkrag) | Loading Balkrag first time! ####");
-                SaveBalkrag();
+                out("#### SCEHR HOL: JOURNEYS (Balkrag) | Loading first time! ####");
+
+                saveData.aiEligible = #numPlayerDwarfs == 0;
+                Save();
             end
 
-            LoadBalkrag();
+            Load();
             InitJourneyBalkrag();
         else
             out("#### SCEHR HOL: JOURNEYS (Balkrag) | Prerequisite script(s) not loaded. This script will not load! ####");

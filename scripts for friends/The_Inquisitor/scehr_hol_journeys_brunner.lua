@@ -1,7 +1,7 @@
 -- HEROES OF LEGEND: JOURNEYS | BRUNNER | scehr | 14/12/2023
 
 local scehrLib = require("scehr_lib");
-local scehrHOLMain = require("scehr_hol_main");
+local holMain = require("scehr_hol_main");
 
 local bretonniaSubcultureKey = "wh_main_sc_brt_bretonnia";
 local bretonniaCouronneKey = "wh_main_brt_bretonnia";
@@ -82,16 +82,16 @@ local messages = {
 };
 
 local listenerKeys = {
-    brunnerSpawn = scehrHOLMain.journeysKeyPrefix.."ListenToBrunnerSpawn",
-    brunnerContracts = scehrHOLMain.journeysKeyPrefix.."ListenToBrunnerFindContracts",
-    brunnerContractHandler = scehrHOLMain.journeysKeyPrefix.."ListenToBrunnerContractHandler",
-    brunnerSecretIdentity = scehrHOLMain.journeysKeyPrefix.."ListenToBrunnerSecretIdentity",
-    augustineHuntListener = scehrHOLMain.journeysKeyPrefix.."ListenToHuntForBrunner",
-    augustineAmbushDilemma = scehrHOLMain.journeysKeyPrefix.."ListenToAugustineAmbushDilemma",
-    augustineBattleEnded = scehrHOLMain.journeysKeyPrefix.."ListenToAugustineBattleEnded",
-    augustineDefeated = scehrHOLMain.journeysKeyPrefix.."ListenToAugustineDefeatedDilemma",
-    augustineDefeatedBretonnia = scehrHOLMain.journeysKeyPrefix.."ListenToAugustineDefeatedBretonniaDilemma",
-    augustineBattleVictorious = scehrHOLMain.journeysKeyPrefix.."ListenToAugustineVictoriousDilemma",
+    brunnerSpawn = holMain.journeysKeyPrefix.."ListenToBrunnerSpawn",
+    brunnerContracts = holMain.journeysKeyPrefix.."ListenToBrunnerFindContracts",
+    brunnerContractHandler = holMain.journeysKeyPrefix.."ListenToBrunnerContractHandler",
+    brunnerSecretIdentity = holMain.journeysKeyPrefix.."ListenToBrunnerSecretIdentity",
+    augustineHuntListener = holMain.journeysKeyPrefix.."ListenToHuntForBrunner",
+    augustineAmbushDilemma = holMain.journeysKeyPrefix.."ListenToAugustineAmbushDilemma",
+    augustineBattleEnded = holMain.journeysKeyPrefix.."ListenToAugustineBattleEnded",
+    augustineDefeated = holMain.journeysKeyPrefix.."ListenToAugustineDefeatedDilemma",
+    augustineDefeatedBretonnia = holMain.journeysKeyPrefix.."ListenToAugustineDefeatedBretonniaDilemma",
+    augustineBattleVictorious = holMain.journeysKeyPrefix.."ListenToAugustineVictoriousDilemma",
 };
 
 local dilemmaKeys = {
@@ -111,7 +111,8 @@ local constants = {
             agentSubtype = "augustine_de_chegney",
             forename = "names_name_444457",
             surname = "names_name_444458",
-            clanName = ""
+            clanName = "",
+            maleOrFemale = true
         },
         siegeForce = {
             "wh_dlc07_brt_inf_men_at_arms_1",
@@ -196,22 +197,25 @@ local constants = {
 
 local saveData = {
     svKey = "sv_hol_BrunnerJourney",
-    augustineProfile = {
-        isDead = false,
-        huntChance = 100,
-    },
-    brunnerProfile = {
-        isDead = false,
-        factionKey = "",
-        subcultureKey = "",
-        journeys = {
-            hasSpawned = false,
-            hasContracts = false,
-            contractsTurnsElapsed = 0,
-            contractsMissionIndex = 1,
-            isRevealed = false,
-            evadedAugustineCount = 1,
-            hasDefeatedAugustine = false
+    aiEligible = false,
+    profiles = {
+        augustine = {
+            isDead = false,
+            huntChance = 100,
+        },
+        brunner = {
+            isDead = false,
+            factionKey = "",
+            subcultureKey = "",
+            journeys = {
+                hasSpawned = false,
+                hasContracts = false,
+                contractsTurnsElapsed = 0,
+                contractsMissionIndex = 1,
+                isRevealed = false,
+                evadedAugustineCount = 1,
+                hasDefeatedAugustine = false
+            }
         }
     }
 };
@@ -228,7 +232,7 @@ local function UpdateBrunnerDetails(iCharacter, factionKey)
         local brunner;
 
         if factionKey ~= "" then
-            brunner = scehrLib.FindCharacterInFactionBySubtype(saveData.brunnerProfile.factionKey, constants.brunnerData.character.agentSubtype);
+            brunner = scehrLib.FindCharacterInFactionBySubtype(saveData.profiles.brunner.factionKey, constants.brunnerData.character.agentSubtype);
         else
             brunner = scehrLib.FindCharacterInWorldBySubtype();
         end
@@ -239,17 +243,17 @@ local function UpdateBrunnerDetails(iCharacter, factionKey)
     end
 end
 
-local function LoadBrunner()
+local function Load()
     saveData = cm:get_saved_value(saveData.svKey);
 
-    if saveData.brunnerProfile.journeys.hasSpawned then
-        UpdateBrunnerDetails(nil, saveData.brunnerProfile.factionKey);
+    if saveData.profiles.brunner.journeys.hasSpawned then
+        UpdateBrunnerDetails(nil, saveData.profiles.brunner.factionKey);
     end
 end
 
-local function SaveBrunner()
+local function Save()
     cm:set_saved_value(saveData.svKey, saveData);
-    LoadBrunner();
+    Load();
 end
 
 -- Dice roll against Augustine difficulty threshold. Returns bool for success or failure, and the roll difference.
@@ -260,7 +264,7 @@ local function CharacterVersusAugustine(charRank, isDisadvantaged)
 
     if isDisadvantaged then multiplier = 1; end
 
-    local roll = scehrLib.D100RollWithFlatModifier(10, charRank * multiplier);
+    local roll = cm:random_number(100, 1) + charRank * multiplier;
     local difference = roll - constants.augustineData.combatDifficultyThreshold;
 
     if roll >= constants.augustineData.combatDifficultyThreshold then
@@ -268,6 +272,15 @@ local function CharacterVersusAugustine(charRank, isDisadvantaged)
     end
 
     return false, difference;
+end
+
+local function EscapeFromAugustine()
+    saveData.profiles.brunner.journeys.evadedAugustineCount = scehrLib.IncrementNumber(saveData.profiles.brunner.journeys.evadedAugustineCount);
+    saveData.profiles.augustine.huntChance = constants.augustineData.baseHuntChance * saveData.profiles.brunner.journeys.evadedAugustineCount;
+
+    Save();
+
+    out("#### SCEHR HOL: JOURNEYS (Brunner) | Brunner evades Augustine! | Evade Count: "..tostring(saveData.profiles.brunner.journeys.evadedAugustineCount).." ####");
 end
 
 local function ListenToAugustineVictoriousDilemma(pendingBattle)
@@ -289,20 +302,20 @@ local function ListenToAugustineVictoriousDilemma(pendingBattle)
                 local isLL = cm:is_agent_transformation_available(playerLord:character_subtype_key());
 
                 if lordBeatAugustine then
-                    scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.battleDefeatBothSurvive);
+                    scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.battleDefeatBothSurvive);
                 else
                     if difference <= constants.rollDeathThreshold and not isLL then
                         out("#### SCEHR HOL: DILEMMAS | Augustine defeats normal Lord, will be killed. ####");
-                        scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.battleDefeatLordKilled);
+                        scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.battleDefeatLordKilled);
                         scehrLib.KillCharacter(playerLord:character_details(), false, false, false);
                     else
                         out("#### SCEHR HOL: DILEMMAS | Augustine defeats LL, will be wounded. ####");
-                        scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.battleDefeatLordWounded);
+                        scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.battleDefeatLordWounded);
                         scehrLib.WoundCharacter(playerLord, false, isLL);
                     end
                 end
 
-                saveData.augustineProfile.huntChance = constants.augustineData.baseHuntChance * saveData.brunnerProfile.journeys.evadedAugustineCount;
+                EscapeFromAugustine();
             end
 
             -- BRUNNER FACES AUGUSTINE, CAN DIE HERE
@@ -310,18 +323,19 @@ local function ListenToAugustineVictoriousDilemma(pendingBattle)
                 local brunnerBeatAugustine, difference = CharacterVersusAugustine(brunnerICharDetails:character():rank(), true);
 
                 if brunnerBeatAugustine then
-                    scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.brunnerFieldEscapeMessage);
+                    scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.brunnerFieldEscapeMessage);
+                    EscapeFromAugustine();
                 else
-                    scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.brunnerFieldDeathMessage);
+                    scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.brunnerFieldDeathMessage);
 
                     scehrLib.KillCharacter(brunnerICharDetails, false, true, false);
 
-                    saveData.brunnerProfile.isDead = true;
-                    saveData.augustineProfile.isDead = true;
+                    saveData.profiles.brunner.isDead = true;
+                    saveData.profiles.augustine.isDead = true;
                 end
             end
 
-            SaveBrunner();
+            Save();
         end,
         false
     );
@@ -340,7 +354,7 @@ local function ListenToAugustineDefeatedBretonniaDilemma(pendingBattle)
 
             -- KILL AUGUSTINE
             if choice == 0 then
-                scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.augustineKilledMessage);
+                scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.augustineKilledMessage);
 
                 cm:force_remove_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.brunnerData.traits.identityRevealed);
                 cm:force_add_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.augustineData.defeatTrait, true);
@@ -348,15 +362,14 @@ local function ListenToAugustineDefeatedBretonniaDilemma(pendingBattle)
 
             -- ENLIST AUGUSTINE
             if choice == 1 then
-                scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.augustinePardonMessage);
+                scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.augustinePardonMessage);
 
                 cm:force_remove_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.brunnerData.traits.identityRevealed);
                 cm:force_add_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.brunnerData.traits.augustineRecruited, true);
 
                 local success, augustine = scehrLib.SpawnLordToFaction(
-                    saveData.brunnerProfile.factionKey,
+                    saveData.profiles.brunner.factionKey,
                     constants.augustineData.character,
-                    true,
                     true
                 );
 
@@ -367,14 +380,13 @@ local function ListenToAugustineDefeatedBretonniaDilemma(pendingBattle)
 
             -- EXILE AUGUSTINE
             if choice == 2 then
-                scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.augustineExiledMessage);
+                scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.augustineExiledMessage);
 
                 cm:force_remove_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.brunnerData.traits.identityRevealed);
 
                 scehrLib.SpawnLordToRandomFactionBySubcultures(
                     constants.augustineData.exileSubcultures,
                     constants.augustineData.character,
-                    true,
                     true
                 );
             end
@@ -396,17 +408,17 @@ local function ListenToAugustineDefeatedDilemma()
 
             -- KILL AUGUSTINE
             if choice == 0 then
-                scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.augustineKilledMessage);
+                scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.augustineKilledMessage);
 
                 cm:force_remove_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.brunnerData.traits.identityRevealed);
                 cm:force_add_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.augustineData.defeatTrait, true);
 
-                saveData.augustineProfile.isDead = true;
+                saveData.profiles.augustine.isDead = true;
             end
 
             -- RANSOM AUGUSTINE
             if choice == 1 then
-                scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.augustineRansomMessage);
+                scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.augustineRansomMessage);
 
                 local ransomSuccess;
                 local augustineDetails;
@@ -414,15 +426,13 @@ local function ListenToAugustineDefeatedDilemma()
                 ransomSuccess, augustineDetails = scehrLib.SpawnLordToFaction(
                     bretonniaCouronneKey,
                     constants.augustineData.character,
-                    true,
                     true
                 );
 
                 if not ransomSuccess then
                     ransomSuccess, augustineDetails = scehrLib.SpawnLordToRandomFactionBySubcultures(
-                        bretonniaSubcultureKey,
+                        { bretonniaSubcultureKey },
                         constants.augustineData.character,
-                        true,
                         true
                     );
                 end
@@ -432,8 +442,8 @@ local function ListenToAugustineDefeatedDilemma()
                 end
             end
 
-            saveData.brunnerProfile.journeys.hasDefeatedAugustine = true;
-            SaveBrunner();
+            saveData.profiles.brunner.journeys.hasDefeatedAugustine = true;
+            Save();
         end,
         false
     );
@@ -445,7 +455,7 @@ local function ListenToAugustineBattleEnded()
         listenerKeys.augustineBattleEnded,
         "BattleCompleted",
         function()
-            return cm:pending_battle_cache_faction_is_involved(saveData.brunnerProfile.factionKey);
+            return cm:pending_battle_cache_faction_is_involved(saveData.profiles.brunner.factionKey);
         end,
         function(context)
             local pendingBattle = cm:model():pending_battle();
@@ -465,34 +475,40 @@ local function ListenToAugustineBattleEnded()
                     local brunnerWon, difference = CharacterVersusAugustine(brunnerICharDetails:character():rank(), true);
 
                     if brunnerWon then
-                        scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.battleDefeatLordKilled);
+                        scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.battleDefeatLordKilled);
+                        EscapeFromAugustine();
 
                         out("#### SCEHR HOL: JOURNEYS (Brunner) | Brunner defends himself and escapes Augustine!");
                     else
-                        scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.brunnerAmbushDeathMessage);
+                        scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.brunnerFieldDeathMessage);
                         scehrLib.KillCharacter(brunnerICharDetails, false, true, false);
 
-                        saveData.brunnerProfile.isDead = true;
-                        saveData.augustineProfile.isDead = true;
+                        saveData.profiles.brunner.isDead = true;
+                        saveData.profiles.augustine.isDead = true;
 
-                        SaveBrunner();
+                        Save();
+
+                        core:remove_listener(listenerKeys.augustineHuntListener);
 
                         out("#### SCEHR HOL: JOURNEYS (Brunner) | Brunner fails and dies with Augustine!");
                     end
                 else
-                    cm:trigger_dilemma(saveData.brunnerProfile.factionKey, dilemmaKeys.augustineVictorious);
+                    cm:trigger_dilemma(saveData.profiles.brunner.factionKey, dilemmaKeys.augustineVictorious);
                     ListenToAugustineVictoriousDilemma(pendingBattle);
                 end
+
                 return;
             end
 
-            if saveData.brunnerProfile.subcultureKey == bretonniaSubcultureKey then
-                cm:trigger_dilemma(saveData.brunnerProfile.factionKey, dilemmaKeys.augustineDefeatedBretonnia);
+            if saveData.profiles.brunner.subcultureKey == bretonniaSubcultureKey then
+                cm:trigger_dilemma(saveData.profiles.brunner.factionKey, dilemmaKeys.augustineDefeatedBretonnia);
                 ListenToAugustineDefeatedBretonniaDilemma();
             else
-                cm:trigger_dilemma(saveData.brunnerProfile.factionKey, dilemmaKeys.augustineDefeated);
+                cm:trigger_dilemma(saveData.profiles.brunner.factionKey, dilemmaKeys.augustineDefeated);
                 ListenToAugustineDefeatedDilemma();
             end
+
+            core:remove_listener(listenerKeys.augustineHuntListener);
         end,
         false
     );
@@ -552,11 +568,13 @@ local function AugustineBattleQuery()
             local augustineFaction = augustineCharacter:faction():name();
             local augustineForce = augustineCharacter:military_force();
 
+            cm:treasury_mod(augustineFaction, 8000);
+
             out("#### SCEHR HOL: JOURNEYS (Brunner) | Augustine attacking Brunner! | Augustine Faction: "..tostring(augustineFaction).." | Augustine Force: "..tostring(augustineForce).." ####");
 
             cm:disable_event_feed_events(true, "wh_event_category_diplomacy", "", "");
 
-            cm:force_declare_war(augustineFaction, saveData.brunnerProfile.factionKey, false, false);
+            cm:force_declare_war(augustineFaction, saveData.profiles.brunner.factionKey, false, false);
             cm:force_attack_of_opportunity(augustineForce:command_queue_index(), brunnerForce:command_queue_index(), false);
 
             ListenToAugustineBattleEnded();
@@ -577,25 +595,24 @@ local function ListenToAugustineAmbushDilemma()
 
             -- BRUNNER FLEES AUGUSTINE
             if choice == 0 then
-                scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.brunnerAmbushEscapeMessage);
-                saveData.brunnerProfile.journeys.evadedAugustineCount = scehrLib.IncrementNumber(saveData.brunnerProfile.journeys.evadedAugustineCount);
-                saveData.augustineProfile.huntChance = constants.augustineData.baseHuntChance * saveData.brunnerProfile.journeys.evadedAugustineCount;
-
-                out("#### SCEHR HOL: JOURNEYS (Brunner) | Brunner evades Augustine! | Evade Count: "..tostring(saveData.brunnerProfile.journeys.evadedAugustineCount).." ####");
+                scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.brunnerAmbushEscapeMessage);
+                EscapeFromAugustine();
             end
 
             -- BRUNNER FIGHTS AUGUSTINE
             if choice == 1 then
-                out("#### SCEHR HOL: JOURNEYS (Brunner) | Brunner loses to Augustine and dies!");
+                out("#### SCEHR HOL: JOURNEYS (Brunner) | Brunner takes Augustine to the grave with him!");
                 scehrLib.KillCharacter(brunnerICharDetails, false, true, false);
 
-                scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.brunnerAmbushDeathMessage);
+                scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.brunnerAmbushDeathMessage);
 
-                saveData.brunnerProfile.isDead = true;
-                saveData.augustineProfile.isDead = true;
+                saveData.profiles.brunner.isDead = true;
+                saveData.profiles.augustine.isDead = true;
+
+                core:remove_listener(listenerKeys.augustineHuntListener);
             end
 
-            SaveBrunner();
+            Save();
         end,
         false
     );
@@ -607,18 +624,18 @@ local function ListenToHuntForBrunner()
         listenerKeys.augustineHuntListener,
         "FactionTurnStart",
         function(context)
-            return context:faction():name() == saveData.brunnerProfile.factionKey;
+            return context:faction():name() == saveData.profiles.brunner.factionKey;
         end,
         function(context)
-            local diceRoll = scehrLib.GenerateRandomNumbers(1, 100, 10, false);
-            local huntChance = saveData.augustineProfile.huntChance + constants.augustineData.baseHuntChance;
+            local diceRoll = cm:random_number(100, 1);
+            local huntChance = saveData.profiles.augustine.huntChance + constants.augustineData.baseHuntChance;
 
             out("#### SCEHR HOL: JOURNEYS (Brunner) | Augustine is hunting! | Hunt Chance: "..tostring(huntChance).." | Roll: "..tostring(diceRoll).." ####")
 
             if diceRoll <= huntChance then
 
                 if brunnerICharDetails:character():is_embedded_in_military_force() == false then
-                    cm:trigger_dilemma(saveData.brunnerProfile.factionKey, dilemmaKeys.augustineAmbush);
+                    cm:trigger_dilemma(saveData.profiles.brunner.factionKey, dilemmaKeys.augustineAmbush);
                     ListenToAugustineAmbushDilemma();
                     return;
                 end
@@ -626,12 +643,12 @@ local function ListenToHuntForBrunner()
                 AugustineBattleQuery();
             else
                 if huntChance <= 100 then
-                    saveData.augustineProfile.huntChance = huntChance;
+                    saveData.profiles.augustine.huntChance = huntChance;
 
-                    SaveBrunner();
+                    Save();
 
                     if huntChance % 15 == 0 then
-                        scehrLib.CreateMessageEvent(saveData.brunnerProfile.factionKey, messages.augustineHuntingMessage);
+                        scehrLib.CreateMessageEvent(saveData.profiles.brunner.factionKey, messages.augustineHuntingMessage);
                     end
                 end
             end
@@ -643,7 +660,7 @@ end
 local function ListenToSecretIdentityDilemma()
     out("#### SCEHR HOL: JOURNEYS (Brunner) | Listening to Brunner secret identity dilemma!");
     core:add_listener(
-        scehrHOLMain.journeysKeyPrefix.."ListenToSecretIdentityDilemma",
+        holMain.journeysKeyPrefix.."ListenToSecretIdentityDilemma",
         "DilemmaChoiceMadeEvent",
         function(context)
             return context:dilemma() == dilemmaKeys.secretIdentity;
@@ -653,16 +670,16 @@ local function ListenToSecretIdentityDilemma()
 
             if choice == 0 then
                 cm:force_add_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.brunnerData.traits.identityRevealed, true);
-                saveData.brunnerProfile.journeys.isRevealed = true;
+                saveData.profiles.brunner.journeys.isRevealed = true;
                 ListenToHuntForBrunner();
             end
 
             if choice == 1 then
                 cm:force_add_trait(cm:char_lookup_str(brunnerICharDetails:character()), constants.brunnerData.traits.identityConcealed, true);
-                saveData.brunnerProfile.journeys.isRevealed = false;
+                saveData.profiles.brunner.journeys.isRevealed = false;
             end
 
-            SaveBrunner();
+            Save();
         end,
         false
     );
@@ -677,8 +694,27 @@ local function ListenToBrunnerSecretIdentity()
             return context:skill_point_spent_on() == constants.brunnerData.skills.secretIdentity;
         end,
         function(context)
-            cm:trigger_dilemma(saveData.brunnerProfile.factionKey, dilemmaKeys.secretIdentity);
-            ListenToSecretIdentityDilemma();
+            if saveData.aiEligible then
+                local spawnSuccess = scehrLib.SpawnLordToFaction(
+                    bretonniaCouronneKey,
+                    constants.augustineData.character,
+                    true
+                );
+
+                if not spawnSuccess then
+                    scehrLib.SpawnLordToRandomFactionBySubcultures(
+                        { bretonniaSubcultureKey },
+                        constants.augustineData.character,
+                        true
+                    );
+                end
+
+                saveData.profiles.brunner.journeys.isRevealed = true;
+                Save();
+            else
+                cm:trigger_dilemma(saveData.profiles.brunner.factionKey, dilemmaKeys.secretIdentity);
+                ListenToSecretIdentityDilemma();
+            end
         end,
         false
     );
@@ -690,10 +726,10 @@ local function BrunnerContractHandler()
         listenerKeys.brunnerContractHandler,
         "FactionTurnStart",
         function(context)
-            return context:faction():name() == saveData.brunnerProfile.factionKey;
+            return context:faction():name() == saveData.profiles.brunner.factionKey;
         end,
         function(context)
-            local turnsElapsed = scehrLib.IncrementNumber(saveData.brunnerProfile.journeys.contractsTurnsElapsed);
+            local turnsElapsed = scehrLib.IncrementNumber(saveData.profiles.brunner.journeys.contractsTurnsElapsed);
             local turnsToNextContract = constants.brunnerData.turnsToNextContract;
 
             if turnsElapsed > turnsToNextContract * #constants.brunnerData.contractMissions then
@@ -702,18 +738,18 @@ local function BrunnerContractHandler()
                 return;
             end
 
-            saveData.brunnerProfile.journeys.contractsTurnsElapsed = turnsElapsed;
+            saveData.profiles.brunner.journeys.contractsTurnsElapsed = turnsElapsed;
 
             if turnsElapsed % turnsToNextContract == 0 then
-                saveData.brunnerProfile.journeys.contractsMissionIndex = scehrLib.IncrementNumber(saveData.brunnerProfile.journeys.contractsMissionIndex);
+                saveData.profiles.brunner.journeys.contractsMissionIndex = scehrLib.IncrementNumber(saveData.profiles.brunner.journeys.contractsMissionIndex);
 
                 cm:trigger_mission(
-                    saveData.brunnerProfile.factionKey,
-                    constants.brunnerData.contractMissions[saveData.brunnerProfile.journeys.contractsMissionIndex]
+                    saveData.profiles.brunner.factionKey,
+                    constants.brunnerData.contractMissions[saveData.profiles.brunner.journeys.contractsMissionIndex]
                 );
             end
 
-            SaveBrunner();
+            Save();
         end,
         true
     );
@@ -728,12 +764,12 @@ local function ListenToBrunnerFindContracts()
             return context:skill_point_spent_on() == constants.brunnerData.skills.findContracts;
         end,
         function(context)
-            saveData.brunnerProfile.journeys.hasContracts = true;
-            SaveBrunner();
+            saveData.profiles.brunner.journeys.hasContracts = true;
+            Save();
 
             cm:trigger_mission(
-                saveData.brunnerProfile.factionKey,
-                constants.brunnerData.contractMissions[saveData.brunnerProfile.journeys.contractsMissionIndex]
+                saveData.profiles.brunner.factionKey,
+                constants.brunnerData.contractMissions[saveData.profiles.brunner.journeys.contractsMissionIndex]
             );
 
             BrunnerContractHandler();
@@ -754,47 +790,64 @@ local function ListenToBrunnerSpawn()
             local brunnerFactionKey = context:character():faction():name()
 
             UpdateBrunnerDetails(context:character(), brunnerFactionKey);
-            saveData.brunnerProfile.factionKey = brunnerFactionKey;
-            saveData.brunnerProfile.subcultureKey = context:character(): faction():subculture();
-            saveData.brunnerProfile.journeys.hasSpawned = true;
+            saveData.profiles.brunner.factionKey = brunnerFactionKey;
+            saveData.profiles.brunner.subcultureKey = context:character(): faction():subculture();
+            saveData.profiles.brunner.journeys.hasSpawned = true;
 
-            SaveBrunner();
+            Save();
 
-            cm:add_agent_experience(cm:char_lookup_str(context:character()), 11, true);
+            -- cm:add_agent_experience(cm:char_lookup_str(context:character()), 11, true);
 
-            ListenToBrunnerFindContracts();
+            if not saveData.aiEligible then ListenToBrunnerFindContracts(); end
             ListenToBrunnerSecretIdentity();
         end,
         false
     );
 end
 
+local function QueryBrunnerStatus(brunnerICharacter)
+    brunnerICharDetails = brunnerICharacter:character_details();
+
+    saveData.profiles.brunner.factionKey = brunnerICharacter:faction():name();
+    saveData.profiles.brunner.subcultureKey = brunnerICharacter:faction():subculture();
+    saveData.profiles.brunner.journeys.hasSpawned = true;
+
+    if brunnerICharacter:has_skill(constants.brunnerData.skills.findContracts) then
+        saveData.profiles.brunner.journeys.hasContracts = true;
+    end
+
+    if brunnerICharacter:has_skill(constants.brunnerData.skills.secretIdentity) then
+        if brunnerICharacter:has_trait(constants.brunnerData.traits.identityRevealed) then
+            saveData.profiles.brunner.journeys.isRevealed = true;
+        end
+    end
+end
+
 -- Guard clause from the last stage to the first stage of journeys for the character.
 local function InitJourneyBrunner()
-    if saveData.brunnerProfile.isDead then return; end
+    if saveData.profiles.brunner.isDead then return; end
 
-    if saveData.brunnerProfile.journeys.hasSpawned == false then
+    -- If brunner exists but isn't set up, check his interface and assign his current values.
+    if saveData.profiles.brunner.journeys.hasSpawned == false then
         local brunnerICharacter = scehrLib.FindCharacterInWorldBySubtype(constants.brunnerData.character.agentSubtype);
         if brunnerICharacter ~= nil then
-            saveData.brunnerProfile.factionKey = brunnerICharacter:faction():name();
-            saveData.brunnerProfile.subcultureKey = brunnerICharacter:faction():subculture();
-            saveData.brunnerProfile.journeys.hasSpawned = true;
-
-            if brunnerICharacter:has_skill(constants.brunnerData.skills.findContracts) then
-                saveData.brunnerProfile.journeys.hasContracts = true;
-            end
-            SaveBrunner();
+            QueryBrunnerStatus(brunnerICharacter);
+            Save();
         else
             ListenToBrunnerSpawn();
             return;
         end
     end
 
-    if saveData.brunnerProfile.journeys.hasContracts and saveData.brunnerProfile.journeys.contractsMissionIndex < #constants.brunnerData.contractMissions then
-        BrunnerContractHandler();
+    if saveData.profiles.brunner.journeys.hasContracts then
+        if saveData.profiles.brunner.journeys.contractsMissionIndex < #constants.brunnerData.contractMissions then
+            BrunnerContractHandler();
+        end
+    else
+        ListenToBrunnerFindContracts();
     end
 
-    if saveData.brunnerProfile.journeys.hasDefeatedAugustine then return; end
+    if saveData.profiles.brunner.journeys.hasDefeatedAugustine then return; end
 
     local pendingBattle = cm:model():pending_battle();
     if pendingBattle:is_null_interface() == false and pendingBattle:is_active() then
@@ -805,17 +858,13 @@ local function InitJourneyBrunner()
                 local char = charList:item_at(i);
 
                 if char:character_subtype(constants.brunnerData.character.agentSubtype) then
-                    saveData.brunnerProfile.journeys.isRevealed = true;
-                    saveData.brunnerProfile.journeys.hasContracts = true;
-                    SaveBrunner();
                     ListenToAugustineBattleEnded();
-                    return
                 end
             end
         end
     end
 
-    if saveData.brunnerProfile.journeys.isRevealed then
+    if saveData.profiles.brunner.journeys.isRevealed then
         ListenToHuntForBrunner();
         return;
     end
@@ -826,26 +875,60 @@ local function InitJourneyBrunner()
     end
 end
 
+local function AIInit()
+    if not saveData.profiles.brunner.journeys.hasSpawned then
+        ListenToBrunnerSpawn();
+        return;
+    end
+
+    if not saveData.profiles.brunner.journeys.isRevealed then
+        if brunnerICharDetails ~= nil and brunnerICharDetails:has_skill(constants.brunnerData.skills.secretIdentity) == false then
+            ListenToBrunnerSecretIdentity();
+        end
+    end
+end
+
 cm:add_saving_game_callback(
     function()
-        SaveBrunner();
+        Save();
     end
 );
 
 cm:add_first_tick_callback(
     function()
-        local isHOLLoaded = scehrHOLMain ~= nil;
+        local isHOLLoaded = holMain ~= nil;
+        local aiEligible = holMain.AINoHumanCheck(
+            {
+                factionKeys = {},
+                subcultureKeys = {
+                    "wh_main_sc_brt_bretonnia",
+                    "wh_main_sc_emp_empire",
+                    "wh3_main_sc_ksl_kislev",
+                    "wh3_main_sc_cth_cathay",
+                    "wh_main_sc_teb_teb",
+                    "wh_main_sc_dwf_dwarfs",
+                    "wh2_main_sc_hef_high_elves"
+                }
+            }
+        );
 
         -- Make sure Heroes of Legend is loaded.
         if isHOLLoaded then
 
             if cm:get_saved_value(saveData.svKey) == nil then
-                out("#### SCEHR HOL: JOURNEYS (Brunner) | Loading Brunner first time! ####");
-                SaveBrunner();
+                out("#### SCEHR HOL: JOURNEYS (Brunner) | Loading first time! ####");
+
+                saveData.aiEligible = aiEligible;
+                Save();
             end
 
-            LoadBrunner();
-            InitJourneyBrunner();
+            Load();
+
+            if aiEligible then
+                AIInit();
+            else
+                InitJourneyBrunner();
+            end
         else
             out("#### SCEHR HOL: JOURNEYS (Brunner) | Prerequisite script(s) not loaded. This script will not load! ####");
         end

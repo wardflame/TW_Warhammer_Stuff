@@ -560,7 +560,7 @@ local listBLL = {
         },
         dilemmaFactionKeys = {},
         dilemmaSubcultureKeys = {},
-        buildingKey = "wh_main_brt_farm_1", -- hundred_sins_street
+        buildingKey = "hundred_sins_street", -- wh_main_brt_farm_1
         regionKey = "",
         dilemmaKey = "",
         spawnOnCharacterSubtype = "",
