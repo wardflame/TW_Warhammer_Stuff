@@ -10,10 +10,11 @@ local function InitLandmarkSpawnListeners()
 
     for i = 1, #cbEntries do
         local cbEntry = cbEntries[i];
-        local svClaimKey = scehrHOLMain.charactersKeyPrefix..cbEntry.claimKey.."_claimed";
-        local svStatus = cm:get_saved_value(svClaimKey);
 
         if cbEntry.campaignKey == cm:get_campaign_name() then
+            local svClaimKey = scehrHOLMain.charactersKeyPrefix..cbEntry.claimKey.."_claimed";
+            local svStatus = cm:get_saved_value(svClaimKey);
+
             if not svStatus then
                 local aiCanClaim = scehrHOLMain.AINoHumanCheck(cbEntry);
 

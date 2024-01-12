@@ -154,8 +154,8 @@ function scehr_lib.SpawnCharactersToFaction(factionKey, characterTable, targetRe
     if #characterTable.heroes > 0 then
         -- Create heroes.
         local locX, locY;
-        for _, value in ipairs(characterTable.heroes) do
-            local heroEntry = value;
+        for i = 1, #characterTable.heroes do
+            local heroEntry = characterTable.heroes[i];
 
             locX, locY = scehr_lib.GetSettlementSpawnCoords(factionKey, targetRegionKey);
 
@@ -192,8 +192,8 @@ function scehr_lib.SpawnCharactersToFaction(factionKey, characterTable, targetRe
 
     if #characterTable.lords > 0 then
         -- Create lords.
-        for _, value in ipairs(characterTable.lords) do
-            local lordEntry = value;
+        for i = 1, #characterTable.lords do
+            local lordEntry = characterTable.lords[i];
             local lordICharDetails = cm:spawn_character_to_pool(
                 factionKey,
                 lordEntry.forename,

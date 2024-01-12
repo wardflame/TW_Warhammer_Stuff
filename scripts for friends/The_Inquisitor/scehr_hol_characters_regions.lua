@@ -11,10 +11,11 @@ local function InitRegionSpawnListeners()
 
     for i = 1, #crEntries do
         local crEntry = crEntries[i];
-        local svClaimKey = scehrHOLMain.charactersKeyPrefix..crEntry.claimKey.."_claimed";
-        local svStatus = cm:get_saved_value(svClaimKey);
 
         if crEntry.campaignKey == cm:get_campaign_name() then
+            local svClaimKey = scehrHOLMain.charactersKeyPrefix..crEntry.claimKey.."_claimed";
+            local svStatus = cm:get_saved_value(svClaimKey);
+
             if not svStatus then
                 local aiCanClaim = scehrHOLMain.AINoHumanCheck(crEntry);
 

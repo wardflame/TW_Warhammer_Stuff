@@ -171,7 +171,105 @@ local listCR = {
             }
         },
         aiEligibile = false
-    }
+    },
+
+    -- CR: OLD WORLD
+    {
+        -- ELEMENT 1
+        claimKey = "towVilePrince",
+        campaignKey = "cr_oldworld",
+        factionKeys = {
+            "wh_main_chs_chaos",
+            "wh3_main_chs_shadow_legion",
+            "wh3_main_chs_tong",
+            "wh3_main_chs_kvellig",
+            "wh3_main_chs_khazag",
+            "wh3_main_chs_gharhar",
+            "wh3_main_chs_dreaded_wo",
+            "wh3_dlc20_chs_sigvald",
+            "wh3_dlc20_chs_kholek",
+            "wh3_dlc20_chs_festus"
+        },
+        subcultureKeys = {},
+        regionKey = "wh3_main_combi_region_marienburg",
+        heroes = {},
+        lords = {
+            {
+                -- LORD 1: VILE PRINCE
+                type = "general",
+                subtype = "vile_prince",
+                maleOrFemale = true,
+                clanName = "",
+                forename = "names_name_444449",
+                surname = "",
+                message = {
+                    messageTitle = "event_feed_strings_text_hol_event_vile_prince_recruit_title",
+                    messagePrimary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",
+                    messageSecondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",
+                    messageIndex = 2005
+                }
+            }
+        },
+        aiEligibile = false
+    },
+    {
+        -- ELEMENT 2
+        claimKey = "towVilePrince",
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh3_main_sc_dae_daemons"
+        },
+        regionKey = "wh3_main_combi_region_marienburg",
+        heroes = {},
+        lords = {
+            {
+                -- LORD 1: VILE PRINCE
+                type = "general",
+                subtype = "vile_prince",
+                maleOrFemale = true,
+                clanName = "",
+                forename = "names_name_444449",
+                surname = "",
+                message = {
+                    messageTitle = "event_feed_strings_text_hol_event_vile_prince_recruit_title",
+                    messagePrimary = "event_feed_strings_text_hol_event_vile_prince_recruit_primary_detail",
+                    messageSecondary = "event_feed_strings_text_hol_event_vile_prince_recruit_secondary_detail",
+                    messageIndex = 2005
+                }
+            }
+        },
+        aiEligibile = false
+    },
+    {
+        -- ELEMENT 9
+        claimKey = "towViscountDAlembencon",
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_main_sc_brt_bretonnia"
+        },
+        regionKey = "cr_oldworld_region_tancred_castle",
+        heroes = {
+            {
+                -- HERO 1: Viscount d'Alembençon 
+                type = "champion",
+                subtype = "the_viscount",
+                maleOrFemale = true,
+                clanName = "",
+                forename = "Viscount",
+                surname = "d'Alembençon",
+                message = {
+                    title = "event_feed_strings_text_hol_event_viscount_recruit_title",
+                    primary = "event_feed_strings_text_hol_event_viscount_recruit_primary_detail",
+                    secondary = "event_feed_strings_text_hol_event_viscount_recruit_secondary_detail",
+                    index = 2011
+                }
+            }
+        },
+        lords = {},
+        aiEligibile = false
+    },
 }
 
 return listCR;

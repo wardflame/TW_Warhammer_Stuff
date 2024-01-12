@@ -1,6 +1,4 @@
--- HEROES OF LEGEND: JOURNEYS | BALKRAG | scehr | 04/01/2024
-
--- cm:add_character_model_override(owningFaction:faction_leader(), "ulther_stonehammer")
+-- HEROES OF LEGEND: JOURNEYS | ULTHER & BORRI | scehr | 04/01/2024
 
 local scehrLib = require("scehr_lib");
 local scehrHOLMain = require("scehr_hol_main");
@@ -10,6 +8,7 @@ local listenerKeys = {
     gnashrakTakenDilemma = scehrHOLMain.journeysKeyPrefix.."ListenToGnashraksLairTakenDilemma",
     dragonCompanyDelay = scehrHOLMain.journeysKeyPrefix.."ListenToGnashrakTakenDelay",
     dragonCompanyDilemma2 = scehrHOLMain.journeysKeyPrefix.."ListenToDragonCompanyDilemma2",
+    ungorTaken = scehrHOLMain.journeysKeyPrefix.."ListenToUngorTaken",
     ungorPostBattle = scehrHOLMain.journeysKeyPrefix.."ListenToUngorPostBattle"
 };
 
@@ -44,6 +43,9 @@ local constants = {
     regionKeys = {
         gnashraksLair = "wh3_main_combi_region_gnashraks_lair", -- wh3_main_combi_region_the_pillars_of_grungni
         karakUngor = "wh3_main_combi_region_karak_ungor" -- wh3_main_combi_region_mount_squighorn
+    },
+    campaignKeys = {
+        oldWorld = "cr_oldworld"
     },
     ultherData = {
         character = {
@@ -96,6 +98,7 @@ local saveData = {
             hasSpawned = false,
             factionKey = "",
             subcultureKey = "",
+            ungorTaken = false
         }
     }
 };
@@ -110,6 +113,10 @@ local function Save()
 end
 
 local function SpawnUltherAndBorriAtLocation(factionKey, regionKey, units)
+    saveData.profiles.ulther.hasSpawned = true;
+    saveData.profiles.ulther.factionKey = saveData.journeys.dragonCompany.claimFaction;
+    Save();
+
     local ultherICharacter;
     local borriICharacter;
     local ultherIMilitaryForce;
@@ -128,7 +135,7 @@ local function SpawnUltherAndBorriAtLocation(factionKey, regionKey, units)
         "",
         "",
         "",
-        true,
+        false,
         function(ulther_cqi)
             ultherICharacter = cm:get_character_by_cqi(ulther_cqi);
             cm:change_character_custom_name(
@@ -189,9 +196,40 @@ local function ListenToUngorPostBattle()
                 if cm:get_faction(saveData.journeys.dragonCompany.claimFaction):is_human() then
                     scehrLib.CreateMessageEvent(saveData.journeys.dragonCompany.claimFaction, messages.karakUngorFateOfUlther);
                 end
+            else
+                saveData.profiles.ulther.ungorTaken = true;
+                Save();
+
+                cm:add_character_model_override(ulther, "ulther_stonehammer_1");
             end
         end,
         false
+    );
+end
+
+local function ListenToUngorTaken()
+    out("#### SCEHR HOL: JOURNEYS (Ulther/Borri) | Listening to Ungor taken!");
+    core:add_listener(
+        listenerKeys.ungorTaken,
+        "RegionFactionChangeEvent",
+        function(context)
+            return context:region():name() == constants.regionKeys.karakUngor;
+        end,
+        function(context)
+            local owningFaction = context:region():owning_faction();
+
+            if owningFaction:is_null_interface() or owningFaction:name() ~= saveData.profiles.ulther.factionKey then return; end
+
+            saveData.profiles.ulther.ungorTaken = true;
+            Save();
+
+            local ulther = scehrLib.FindCharacterInFactionBySubtype(saveData.profiles.ulther.factionKey, constants.ultherData.character.subtype, true);
+
+            cm:add_character_model_override(ulther, "ulther_stonehammer_1");
+
+            core:remove_listener(listenerKeys.ungorTaken);
+        end,
+        true
     );
 end
 
@@ -286,6 +324,7 @@ local function ListenToGnashraksLairTakenDilemma()
                 saveData.profiles.ulther.hasSpawned = true;
                 saveData.profiles.ulther.factionKey = saveData.journeys.dragonCompany.claimFaction;
                 SpawnUltherAndBorriAtLocation(saveData.journeys.dragonCompany.claimFaction, constants.regionKeys.gnashraksLair, constants.ultherData.forces.aided);
+                ListenToUngorTaken();
             end
 
             -- Ulther goes it on his own.
@@ -310,11 +349,8 @@ local function GnashrakTakenByAI()
     local diceRoll = cm:random_number(100, 1);
 
     if diceRoll > 50 then
-        saveData.profiles.ulther.hasSpawned = true;
-        saveData.profiles.ulther.factionKey = saveData.journeys.dragonCompany.claimFaction;
-        Save();
-
         SpawnUltherAndBorriAtLocation(saveData.journeys.dragonCompany.claimFaction, constants.regionKeys.gnashraksLair, constants.ultherData.forces.aided);
+        ListenToUngorTaken();
     else
         UltherAndBorriAttackUngor(constants.ultherData.forces.delayed);
     end
@@ -335,16 +371,16 @@ local function ListenToGnashraksLairTaken()
             if owningFaction:subculture() ~= constants.dwarfSubcultureKey then return; end
             if owningFaction:is_human() == false and saveData.aiEligible == false then return; end
 
+            saveData.journeys.dragonCompany.gnashrakTaken = true;
+            saveData.journeys.dragonCompany.claimFaction = owningFaction:name();
+            Save();
+
             if saveData.aiEligible then
-                GnashrakTakenByAI(owningFaction:name())
+                GnashrakTakenByAI()
             else
                 cm:trigger_dilemma(owningFaction:name(), dilemmaKeys.ultherDragonCompany1);
                 ListenToGnashraksLairTakenDilemma();
             end
-
-            saveData.journeys.dragonCompany.gnashrakTaken = true;
-            saveData.journeys.dragonCompany.claimFaction = owningFaction:name();
-            Save();
 
             core:remove_listener(listenerKeys.gnashrakTaken);
         end,
@@ -353,7 +389,19 @@ local function ListenToGnashraksLairTaken()
 end
 
 local function InitJourneyUltherBorri()
-    if saveData.profiles.ulther.hasSpawned then return; end
+    if cm:get_campaign_name() == constants.campaignKeys.oldWorld then
+        if not saveData.profiles.ulther.ungorTaken then
+            ListenToUngorTaken();
+            return;
+        end
+    end
+
+    if saveData.profiles.ulther.hasSpawned then
+        if not saveData.profiles.ulther.ungorTaken then
+            ListenToUngorTaken();
+            return;
+        end
+    end
 
     if saveData.journeys.dragonCompany.delayed then
         if saveData.journeys.dragonCompany.delayElapsed < constants.dragonCompanyTurnsDelay then

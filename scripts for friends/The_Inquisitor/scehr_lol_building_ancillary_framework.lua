@@ -68,6 +68,124 @@ local listBA = {
         buildingKey = "lost_expedition_grave",
         ancillaryKey = "ethereal_tsar_horn",
         aiEligible = false
+    },
+
+    -- CR: OLD WORLD
+    {
+        -- BRETONNIA: KNIGHTS OF CUILEUX BANNER
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_main_sc_brt_bretonnia"
+        },
+        buildingKey = "cuileux_barrows",
+        ancillaryKey = "anc_knights_of_cuileux_banner",
+        aiEligible = false
+    },
+    {
+        -- PROUT'S FINEST BREW ANCILLARY
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_main_sc_brt_bretonnia",
+            "wh_main_sc_emp_empire",
+            "wh_main_sc_vmp_vampire_counts",
+            "wh2_dlc11_sc_cst_vampire_coast",
+            "wh_main_sc_dwf_dwarfs",
+            "wh_main_sc_teb_teb",
+            "wh2_main_sc_hef_high_elves",
+            "wh2_main_sc_def_dark_elves",
+            "wh2_dlc09_sc_tmb_tomb_kings",
+            "wh_dlc05_sc_wef_wood_elves",
+            "wh3_main_sc_ogr_ogre_kingdoms",
+            "wh2_main_sc_lzd_lizardmen",
+            "wh3_main_sc_ksl_kislev",
+            "wh3_main_sc_cth_cathay"
+        },
+        buildingKey = "aragon_saloon",
+        ancillaryKey = "anc_prout_brew",
+        aiEligible = false
+    },
+    {
+        -- KISLEV & VCOUNTS: HORN OF THE LOST EXPEDITION
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh3_main_sc_ksl_kislev",
+            "wh_main_sc_vmp_vampire_counts"
+        },
+        buildingKey = "lost_expedition_grave",
+        ancillaryKey = "ethereal_tsar_horn",
+        aiEligible = false
+    },
+    {
+        -- KISLEV & VCOUNTS: HORN OF THE LOST EXPEDITION
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh3_main_sc_ksl_kislev",
+            "wh_main_sc_vmp_vampire_counts"
+        },
+        buildingKey = "lost_expedition_grave",
+        ancillaryKey = "ethereal_tsar_horn",
+        aiEligible = false
+    }
+,
+    {
+        -- DWARVES: HAMMER OF FATE
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_main_sc_dwf_dwarfs"
+        },
+        buildingKey = "karak_dum_fortress",
+        ancillaryKey = "hammer_of_fate",
+        aiEligible = false
+    },
+    {
+        -- DWARVES: AXE OF RUNEMASTERS
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_main_sc_dwf_dwarfs"
+        },
+        buildingKey = "karak_dum_fortress",
+        ancillaryKey = "axe_of_runemasters",
+        aiEligible = false
+    },
+    {
+        -- EMPIRE: SPELLSINGER CEIFILITHAIR
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_main_sc_emp_empire"
+        },
+        buildingKey = "grand_orrery",
+        ancillaryKey = "follower_ceifilithair",
+        aiEligible = false
+    },
+    {
+        -- EMPIRE: MOTHER AGATA VON DURCH
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_main_sc_emp_empire"
+        },
+        buildingKey = "salzenmund_shallya_temple",
+        ancillaryKey = "follower_mother_agata",
+        aiEligible = false
+    },
+    {
+        -- BEASTMEN & KHORNE: BRASS SKULL
+        campaignKey = "cr_oldworld",
+        factionKeys = {},
+        subcultureKeys = {
+            "wh_dlc03_sc_bst_beastmen",
+            "wh3_main_sc_kho_khorne"
+        },
+        buildingKey = "kazron_gorespite_tomb",
+        ancillaryKey = "brass_skull",
+        aiEligible = false
     }
 };
 
